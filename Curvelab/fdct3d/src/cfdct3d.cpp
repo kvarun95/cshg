@@ -123,21 +123,62 @@ void call_fdct3d(double* xre_io, int n_xre_io,
 
 
 
-    // if (option=='F') {
+    if (option=='F') {
 
-    //     CpxNumTns x(N1,N2,N3);
-    //     for (int i=0;i<N1;i++) {
-    //         for (int j=0;j<N2;j++) {
-    //             for (int k=0;k<N3;k++) {
-    //                 x(i,j,k) = cpx(xre_io[N2*N3*i+N3*j+k], xim_io[N2*N3*i+N3*j+k]);
-    //             }
-    //         }
-    //     }
+        CpxNumTns x(N1,N2,N3);
+        for (int i=0;i<N1;i++) {
+            for (int j=0;j<N2;j++) {
+                for (int k=0;k<N3;k++) {
+                    x(i,j,k) = cpx(xre_io[N2*N3*i+N3*j+k], xim_io[N2*N3*i+N3*j+k]);
+                }
+            }
+        }
+        vector< vector<CpxNumTns> > c;
+        fdct3d_forward(N1, N2, N3, nbscales, nbdstz_coarse, ac, x, c);
+
+        // conditional statements checking if dimensions are okay
+        bool s1=0; bool s2=0;
+        if (S!=n_W || S!=c.size()) {
+            s1 = 1;
+            std::cout << "Dimension mismatch : The size of W must match the number of scales S" << std::endl;
+        }
+        else {
+            for (int s=0;s<c.size();s++) {
+                if (W[s]!=c[s].size()) {
+                    s2 = s2 + 1;
+                    std::cout << "Dimension mismatch : The wedge dimensions contained in W[" << s <<"] should match the wedge dimensions nxs["<< s <<"].size()" << std::endl;
+                }
+            }
+        }
+
+        // unpack curvelet coeffs into 1d c++ arrays
+        int idx=0;
+        int n=0;
+        for (int s=0;s<c.size();s++) {
+            for (int w=0;w<c[s].size();w++) {
+                for (int i=0;i<nxs_io[n];i++) {
+                    for (int j=0;j<nys_io[n];j++) {
+                        for (int k=0;k<nzs_io[n];k++) {
+                            cre_io[idx] = c[s][w](i,j,k).real();
+                            cim_io[idx] = c[s][w](i,j,k).imag();
+                            idx++;
+                        }
+                    }
+                }
+                n++;
+            }
+        }
+
+    }
 
 
+    if (option=='B') {
 
+    }
 
-    // }
+    if (option=='S') {
+
+    }
 
 }
 
