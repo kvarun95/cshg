@@ -639,6 +639,12 @@ int fdct3d_forward(int N1, int N2, int N3, int nbscales, int nbdstz_coarse, int 
   //  fft
   CpxNumTns T(X);
   fftwnd_plan p = fftw3d_create_plan(N3, N2, N1, FFTW_FORWARD, FFTW_ESTIMATE | FFTW_IN_PLACE);
+  std::cout << N3 << std::endl;
+  std::cout << N2 << std::endl;
+  std::cout << N1 << std::endl;
+  std::cout << FFTW_FORWARD << std::endl;
+  std::cout << FFTW_ESTIMATE << std::endl;
+  std::cout << FFTW_IN_PLACE << std::endl;
   fftwnd_one(p, (fftw_complex*)T.data(), NULL);
   double sqrtprod = sqrt(double(N1*N2*N3));  for(int i=0; i<N1; i++)	 for(int j=0; j<N2; j++)		for(int k=0; k<N3; k++)		  T(i,j,k) /= sqrtprod;
   fftwnd_destroy_plan(p);

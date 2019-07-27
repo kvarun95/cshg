@@ -135,9 +135,9 @@ void test_forward() {
                 nxs_io, ns_io, nys_io, ns_io, nzs_io, ns_io,
                 W, n_W, N1, N2, N3, nbscales, nbdstz_coarse, ac, option);
 
-    for (int i=0;i<nc;i++) {
-        std::cout << cre[i] << "," << cim[i] << std::endl;    
-    }
+    // for (int i=0;i<nc;i++) {
+    //     std::cout << cre[i] << "," << cim[i] << std::endl;    
+    // }
 
 }
 
