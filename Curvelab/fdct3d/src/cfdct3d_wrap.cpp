@@ -3117,6 +3117,8 @@ namespace swig {
     #include "cfdct3d.hpp"
     #include <iostream>
     #include "fftw.h"
+    #include "fdct3d.hpp"
+    #include "fdct3dinline.hpp"
 
 
 #ifndef SWIG_FILE_WITH_INIT

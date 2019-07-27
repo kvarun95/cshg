@@ -3,6 +3,7 @@ import numpy
 
 # g++ -o cfdct3d cfdct3d.cpp libfdct3d.a -fPIC -L/home/varun/fftw-2.1.5/fftw/.libs -lfftw
 cpp_compile_args = ["libfdct3d.a", "-fPIC", "-L/home/varun/fftw-2.1.5/fftw/.libs", "-lfftw"]
+include_dirs=[numpy.get_include(), '.']
 
 cfdct3d_module = Extension('_cfdct3d',
                            sources=['cfdct3d.cpp',
@@ -12,8 +13,8 @@ cfdct3d_module = Extension('_cfdct3d',
                                     'cfdct3d.i'],
                            swig_opts=["-c++"],
                            extra_compile_args=cpp_compile_args,
-                           include_dirs=[numpy.get_include(), '.'],
-                           library_dirs=['/home/varun/fftw-2.1.5/fftw/.libs'],
+                           include_dirs=include_dirs,
+                           library_dirs=['/home/varun/fftw-2.1.5/fftw/.libs', '.'],
                            libraries=['fftw'],
                                     )
 

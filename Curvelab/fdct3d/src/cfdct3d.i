@@ -4,6 +4,8 @@
     #include "cfdct3d.hpp"
     #include <iostream>
     #include "fftw.h"
+    #include "fdct3d.hpp"
+    #include "fdct3dinline.hpp"
 %}
 
 %include "numpy.i"

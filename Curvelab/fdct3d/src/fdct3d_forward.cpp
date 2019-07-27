@@ -644,7 +644,7 @@ int fdct3d_forward(int N1, int N2, int N3, int nbscales, int nbdstz_coarse, int 
   fftwnd_destroy_plan(p);
   CpxOffTns F(N1, N2, N3);
   fdct3d_fftshift(N1, N2, N3, T, F);
-  
+
   //expand if necessary
   CpxOffTns O;
   if(ac==1) {

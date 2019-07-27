@@ -132,8 +132,8 @@ if True:
     cre_io = np.zeros((nc,))
     cim_io = np.zeros((nc,))
 
-    xre_io = np.random.rand(N1*N2*N3)
-    xim_io = np.random.rand(N1*N2*N3)
+    xre_io = np.random.rand(N1*N2*N3).astype('double')
+    xim_io = np.random.rand(N1*N2*N3).astype('double')
 
     cfdct3d.call_fdct3d(xre_io, xim_io,
                         cre_io, cim_io,
