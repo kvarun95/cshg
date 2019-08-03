@@ -1,5 +1,7 @@
 import numpy as np
 import cfdct3d
+import pycfdct3d
+
 
 
 def test_w():
@@ -29,13 +31,13 @@ def test_w():
     n_cim_io = 2
     cim_io = np.zeros((n_cim_io,))
 
-    cfdct3d.call_fdct3d(xre_io, xim_io,
-                        cre_io, cim_io,
-                        ns_placeholder, ns_placeholder, ns_placeholder, W,
-                        N1, N2, N3, nbscales, nbdstz_coarse,
-                        ac, option)
+    xre, xim, cre, cim, nxs, nys, nzs, w = pycfdct3d.pycall_fdct3d(xre_io, xim_io,
+                                                                   cre_io, cim_io,
+                                                                   ns_placeholder, ns_placeholder, ns_placeholder, W,
+                                                                   N1, N2, N3, nbscales, nbdstz_coarse,
+                                                                   ac, option)
 
-    print(W)
+    print(w)
 
 def test_param():
 # if True:
@@ -69,21 +71,21 @@ def test_param():
     n_cim_io = 2
     cim_io = np.zeros((n_cim_io,))
 
-    cfdct3d.call_fdct3d(xre_io, xim_io,
-                        cre_io, cim_io,
-                        nxs_io, nys_io, nzs_io, W,
-                        N1, N2, N3, nbscales, nbdstz_coarse,
-                        ac, option)
+    xre, xim, cre, cim, nxs, nys, nzs, w = pycfdct3d.pycall_fdct3d(xre_io, xim_io,
+                                                                   cre_io, cim_io,
+                                                                   nxs_io, nys_io, nzs_io, W,
+                                                                   N1, N2, N3, nbscales, nbdstz_coarse,
+                                                                   ac, option)
 
     i=0
     for s in range(nbscales):
         for w in range(W[s]):
-            print("Dimension of c[",s,"][",w,"] is : (",nxs_io[i],",",nys_io[i],",",nzs_io[i],")")
+            print("Dimension of c[",s,"][",w,"] is : (",nxs[i],",",nys[i],",",nzs[i],")")
             i = i+1
 
 
-# def test_forward():
-if True:
+def test_forward():
+# if True:
 
     option = 'F'
     ac = 0
@@ -109,7 +111,7 @@ if True:
     n_cim_io = 2
     cim_io = np.zeros((n_cim_io,))
 
-    cfdct3d.call_fdct3d(xre_io, xim_io,
+    xre_io, xim_io, cre_io, cim_io, nxs_io, nys_io, nzs_io, W = pycfdct3d.pycall_fdct3d(xre_io, xim_io,
                         cre_io, cim_io,
                         ns_placeholder, ns_placeholder, ns_placeholder, W,
                         N1, N2, N3, nbscales, nbdstz_coarse,
@@ -122,7 +124,7 @@ if True:
     nys_io = np.zeros((ns_io,), dtype=np.int32)
     nzs_io = np.zeros((ns_io,), dtype=np.int32)
 
-    cfdct3d.call_fdct3d(xre_io, xim_io,
+    xre_io, xim_io, cre_io, cim_io, nxs_io, nys_io, nzs_io, W = pycfdct3d.pycall_fdct3d(xre_io, xim_io,
                         cre_io, cim_io,
                         nxs_io, nys_io, nzs_io, W,
                         N1, N2, N3, nbscales, nbdstz_coarse,
@@ -135,7 +137,7 @@ if True:
     xre_io = np.random.rand(N1*N2*N3).astype('double')
     xim_io = np.random.rand(N1*N2*N3).astype('double')
 
-    cfdct3d.call_fdct3d(xre_io, xim_io,
+    xre_io, xim_io, cre_io, cim_io, nxs_io, nys_io, nzs_io, W = pycfdct3d.pycall_fdct3d(xre_io, xim_io,
                         cre_io, cim_io,
                         nxs_io, nys_io, nzs_io, W,
                         N1, N2, N3, nbscales, nbdstz_coarse,
