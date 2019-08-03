@@ -41,13 +41,12 @@ class trial_forward_operator:
         return A.T.conj() @ y
 
 
+    def spectral(self, I, z, mask=None):
 
-def spectral(self, I, z, mask=None):
+        m = self.shape[0]
+        print(m)
 
-    m = self.shape[0]
-    print(m)
-
-    return (1./m) * self.adj_apply( I * self.apply(z) )
+        return (1./m) * self.adj_apply( I * self.apply(z) )
 
 
 # tests
@@ -276,78 +275,79 @@ def artificial_data_coded_apertures_with_real_input():
     # plt.show()
 
 
-# def real_data_coded_apertures(niter):
+def real_data_coded_apertures(niter):
+# if True:
 
-niter = 500
+    niter = 500
 
-print('real_data_coded_apertures')
-N = 256
-num_masks = 10
-mode='amplify'
+    print('real_data_coded_apertures')
+    N = 256
+    num_masks = 10
+    mode='amplify'
 
-# data directory
-data_dir = "C:/Users/vak2/OneDrive for Business/turbid/Experiments/CSHG/500nm/190508/data/"
+    # data directory
+    data_dir = "C:/Users/vak2/OneDrive for Business/turbid/Experiments/CSHG/500nm/190508/data/"
 
-mask_filenames = []
-for file in os.listdir(data_dir+"maskth/"):
-    if file.endswith(".tif"):
-        mask_filenames += [data_dir+"maskth/"+file]
+    mask_filenames = []
+    for file in os.listdir(data_dir+"maskth/"):
+        if file.endswith(".tif"):
+            mask_filenames += [data_dir+"maskth/"+file]
 
 
-mask = masks(num_masks, (N,N))
+    mask = masks(num_masks, (N,N))
 
-assert len(mask_filenames)==num_masks, "Number of masks does not match number of files"
-mask.get_mask(mask_filenames)
+    assert len(mask_filenames)==num_masks, "Number of masks does not match number of files"
+    mask.get_mask(mask_filenames)
 
-# rescale mask between -1 and 1
-mask.value = 2 * (mask.value/255.) - 1
-mask.value = -mask.value
+    # rescale mask between -1 and 1
+    mask.value = 2 * (mask.value/255.) - 1
+    mask.value = -mask.value
 
-# put mask boundaries to zero (to account for phase singularities)
-# Estimate statistics for calculating the frobenius norm from the emperical probability mass distribution on {-1,0,1} in the masks
-mask.nullify_boundaries()
-expected = 0.6101730346679688
+    # put mask boundaries to zero (to account for phase singularities)
+    # Estimate statistics for calculating the frobenius norm from the emperical probability mass distribution on {-1,0,1} in the masks
+    mask.nullify_boundaries()
+    expected = 0.6101730346679688
 
-# define forward operator 
-fwd_op = forward_op(mask=mask, mode=mode)
+    # define forward operator 
+    fwd_op = forward_op(mask=mask, mode=mode)
 
-# get measured data
-I_meas = scipy.io.loadmat(data_dir+"meas.mat")['meas_save']
-I_meas = np.transpose(I_meas, (2,0,1))
-I_meas[I_meas<0.] = 0.
-I_meas = I_meas**2
-I_meas = I_meas[:,::-1,::-1]
+    # get measured data
+    I_meas = scipy.io.loadmat(data_dir+"meas.mat")['meas_save']
+    I_meas = np.transpose(I_meas, (2,0,1))
+    I_meas[I_meas<0.] = 0.
+    I_meas = I_meas**2
+    I_meas = I_meas[:,::-1,::-1]
 
-master = scipy.io.loadmat(data_dir+"masterp.mat")['masterp_save']
-master = master[::-1,::-1]
-master[master<0.] = 0.
+    master = scipy.io.loadmat(data_dir+"masterp.mat")['masterp_save']
+    master = master[::-1,::-1]
+    master[master<0.] = 0.
 
-# approximating the frobenius norm of A with its expected value:
-n = fwd_op.shape[1]
+    # approximating the frobenius norm of A with its expected value:
+    n = fwd_op.shape[1]
 
-if mode=='amplify':
-    frob = np.sqrt(fwd_op.shape[0]) * np.sqrt(fwd_op.shape[1] )
-elif mode=='ortho':
-    frob = np.sqrt(fwd_op.shape[0])
+    if mode=='amplify':
+        frob = np.sqrt(fwd_op.shape[0]) * np.sqrt(fwd_op.shape[1] )
+    elif mode=='ortho':
+        frob = np.sqrt(fwd_op.shape[0])
 
-frob = expected * frob 
-lamda = np.sqrt( fwd_op.shape[1] * np.sum(I_meas) ) / frob
+    frob = expected * frob 
+    lamda = np.sqrt( fwd_op.shape[1] * np.sum(I_meas) ) / frob
 
-x_init, x_est, y_est, final_loss = wirtinger_flow(I_meas, fwd_op, lamda, 
-        z_init='spectral', 
-        mu0=0.01, 
-        n_iter=niter, # 500
-        adaptive_step=True, 
-        tau0 = 10000,
-        tikhonov=True,
-        reg=0.001,
-        include_gersh=True,
-        gersh_proj=master,
-        verbose=True)
+    x_init, x_est, y_est, final_loss = wirtinger_flow(I_meas, fwd_op, lamda, 
+            z_init='spectral', 
+            mu0=0.01, 
+            n_iter=niter, # 500
+            adaptive_step=True, 
+            tau0 = 10000,
+            tikhonov=True,
+            reg=0.001,
+            include_gersh=True,
+            gersh_proj=master,
+            verbose=True)
 
-# return x_init, x_est, fwd_op, I_meas, final_loss
+    return x_init, x_est, fwd_op, I_meas, final_loss
 
-# plt.imshow(np.abs(x_init));plt.colorbar();plt.show()
+    # plt.imshow(np.abs(x_init));plt.colorbar();plt.show()
 
 def overnight_run_with_high_hopes(niters):
     x_inits = []
