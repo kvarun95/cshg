@@ -1,7 +1,8 @@
 # Visual studio code settings
 .vscode/*
 
-
+# For MACs
+.DS_Store/
 
 
 # C++

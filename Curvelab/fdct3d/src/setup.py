@@ -31,11 +31,12 @@ def my_get_config_vars(*args):
 dsc.get_config_vars = my_get_config_vars
 
 SWIG = False
+FFTW = '/Users/vkelkar/fftw-2.1.5'
 
 if SWIG:
       # g++ -o cfdct3d cfdct3d.cpp libfdct3d.a -fPIC -L/home/varun/fftw-2.1.5/fftw/.libs -lfftw
-      cpp_compile_args = ["-fPIC", "-L/home/varun/fftw-2.1.5/fftw/.libs", "-lfftw"]
-      include_dirs=[numpy.get_include(), '.', '/home/varun/fftw-2.1.5/fftw/.libs']
+      cpp_compile_args = ["-fPIC", "-L"+FFTW+"/fftw/.libs", "-lfftw"]
+      include_dirs=[numpy.get_include(), '.', FFTW+'/fftw/.libs']
 
       cfdct3d_module = Extension('_cfdct3d',
                               sources=['cfdct3d.cpp',
@@ -45,9 +46,9 @@ if SWIG:
                                           'cfdct3d.i'],
                               swig_opts=["-c++"],
                               extra_compile_args=cpp_compile_args,
-                              extra_objects=["libfdct3d.a", "/home/varun/fftw-2.1.5/fftw/.libs/libfftw.a"],
+                              extra_objects=["libfdct3d.a", FFTW+"/fftw/.libs/libfftw.a"],
                               include_dirs=include_dirs,
-                              library_dirs=['/home/varun/fftw-2.1.5/fftw/.libs', '.'],
+                              library_dirs=[FFTW+'/fftw/.libs', '.'],
                               libraries=['fftw', 'fdct3d'],
                                           )
 
@@ -59,15 +60,15 @@ if SWIG:
             )
 else:
       # g++ -o cfdct3d cfdct3d.cpp libfdct3d.a -fPIC -L/home/varun/fftw-2.1.5/fftw/.libs -lfftw
-      cpp_compile_args = ["-fPIC", "-L/home/varun/fftw-2.1.5/fftw/.libs", "-lfftw"]
-      include_dirs=[numpy.get_include(), '.', '/home/varun/fftw-2.1.5/fftw/.libs']
+      cpp_compile_args = ["-fPIC", "-L"+FFTW+"/fftw/.libs", "-lfftw"]
+      include_dirs=[numpy.get_include(), '.', FFTW+'/fftw/.libs']
 
       cfdct3d_module = Extension(name='pycfdct3d',
                               sources=['pycfdct3d.pyx', 'cfdct3d.cpp'],
                               extra_compile_args=cpp_compile_args,
-                              extra_objects=["libfdct3d.a", "/home/varun/fftw-2.1.5/fftw/.libs/libfftw.a"],
+                              extra_objects=["libfdct3d.a", FFTW+"/fftw/.libs/libfftw.a"],
                               include_dirs=include_dirs,
-                              library_dirs=['/home/varun/fftw-2.1.5/fftw/.libs', '.'],
+                              library_dirs=[FFTW+'/fftw/.libs', '.'],
                               libraries=['fftw', 'fdct3d'],
                                           )
 

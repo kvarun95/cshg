@@ -1,5 +1,5 @@
 import numpy as np
-import cfdct3d
+# import cfdct3d
 import pycfdct3d
 
 
