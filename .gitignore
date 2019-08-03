@@ -1,3 +1,6 @@
+# project specific
+rawdata/
+
 # For MACs
 .DS_Store/
 
