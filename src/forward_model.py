@@ -1,5 +1,4 @@
 import numpy as np 
-import matplotlib.pyplot as plt 
 import scipy.linalg as la
 import scipy.sparse.linalg as sla
 
@@ -19,7 +18,7 @@ class fresnelprop(sla.LinearOperator):
     def __init__(self,
                 input_shape,
                 output_shape,
-                dtype='complex',
+                dtype=complex,
                 include_shg=False):
 
         super(fresnelprop, self).__init__(
@@ -85,7 +84,53 @@ class fresnelprop(sla.LinearOperator):
         xf = np.fft.ifftshift(xf, axes=(0,1))
         x = np.fft.ifft2(xf, axes=(0,1))
 
-        return x        
+        return x
+
+
+class fourierprop(sla.LinearOperator):
+    """ Fourier optics lens propagation model. Described as:
+    Fourier lens -> mask -> fourier lens 
+    """
+    
+    def __init__(self, mask, dtype=complex):
+        
+        super(fourierprop, self).__init__(
+            dtype=dtype,
+            shape=(np.prod(mask.shape) * mask.num, np.prod(mask.shape)),
+        )
+        self.shapeOI = ( (mask.num, *mask.shape), mask.shape )
+        self.mask = mask
+
+
+    def _matvec(self, x):
+        
+        assert self.shapeOI[1]==x.shape, "Improper input or kernel shape"
+
+        xf = np.fft.fft2(x, axes=(-1,-2), norm='ortho')
+        xf = np.fft.fftshift(xf, axes=(-1,-2))
+
+        xfm = self.mask.apply(xf)
+
+        yf = np.fft.ifftshift(xfm, axes=(-1,-2))
+        y = np.fft.ifft2(yf, axes=(-1,-2), norm='ortho')
+
+        return y
+
+
+    def _adjoint(self, y):
+
+        assert self.shapeOI[0]==y.shape, "Improper input or kernel shape"
+
+        yf = np.fft.fft2(y, axes=(-1,-2), norm='ortho')
+        yf = np.fft.fftshift(yf, axes=(-1,-2))
+
+        yfm = self.mask.apply(yf)
+        xf = np.sum(yfm, axis=0)
+
+        xf = np.fft.ifftshift(xf, axes=(-1,-2))
+        x = np.fft.ifft2(xf, axes=(-1,-2), norm='ortho')
+
+        return x
 
 
 
