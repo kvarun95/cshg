@@ -1,6 +1,7 @@
 import numpy as np 
 import scipy.linalg as la 
 
+from numpy import pi, cos, sin, exp
 
 def add_noise(x, SNR, mode='gaussian'):
 	""" Adds gaussian noise of a given SNR to a signal
@@ -19,6 +20,7 @@ def add_noise(x, SNR, mode='gaussian'):
 
 	return x_noisy
 
+
 def phase_dist(xa,xb):
 	""" Should be 0 if x and y differ only by a global phase.
 	"""
@@ -26,3 +28,8 @@ def phase_dist(xa,xb):
 	x2 = xb.flatten()
 
 	return np.sqrt( la.norm(x1)**2 + la.norm(x2)**2 - 2*abs(np.vdot(x1,x2)) )
+
+
+def cis(theta):
+
+	return cos(theta) + 1.j*sin(theta)
