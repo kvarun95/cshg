@@ -60,7 +60,7 @@ class fresnelprop(sla.LinearOperator):
 
     def _matvec(self, x):
 
-        assert self.shapeOI[1]==x.shape, "Improper input or kernel shape"
+        # assert self.shapeOI[1]==x.shape, "Improper input or kernel shape"
 
         xf = np.fft.fft2(x, axes=(0,1))
         xf = np.fft.fftshift(xf, axes=(0,1))
@@ -74,7 +74,7 @@ class fresnelprop(sla.LinearOperator):
 
     def _adjoint(self, y):
         
-        assert self.shapeOI[0]==y.shape, "Improper input or kernel shape"
+        # assert self.shapeOI[0]==y.shape, "Improper input or kernel shape"
         
         z = np.stack([y]*self.NZ, axis=2)
         zf = np.fft.fft2(z, axes=(0,1))
@@ -104,7 +104,7 @@ class fourierprop(sla.LinearOperator):
 
     def _matvec(self, x):
         
-        assert self.shapeOI[1]==x.shape, "Improper input or kernel shape"
+        # assert self.shapeOI[1]==x.shape, "Improper input or kernel shape"
 
         xf = np.fft.fft2(x, axes=(-1,-2), norm='ortho')
         xf = np.fft.fftshift(xf, axes=(-1,-2))
@@ -119,7 +119,7 @@ class fourierprop(sla.LinearOperator):
 
     def _adjoint(self, y):
 
-        assert self.shapeOI[0]==y.shape, "Improper input or kernel shape"
+        # assert self.shapeOI[0]==y.shape, "Improper input or kernel shape"
 
         yf = np.fft.fft2(y, axes=(-1,-2), norm='ortho')
         yf = np.fft.fftshift(yf, axes=(-1,-2))

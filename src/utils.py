@@ -33,3 +33,8 @@ def phase_dist(xa,xb):
 def cis(theta):
 
 	return cos(theta) + 1.j*sin(theta)
+
+
+def soft(x, lamda):
+
+	return x
