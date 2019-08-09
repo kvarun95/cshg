@@ -1,5 +1,8 @@
+import sys 
 import numpy as np 
 import scipy.linalg as la 
+import pywt 
+sys.path.append("../Curvelab/fdct3d/src/")
 
 from numpy import pi, cos, sin, exp
 
@@ -38,3 +41,14 @@ def cis(theta):
 def soft(x, lamda):
 
 	return x
+
+def soft_wavelets(x, lamda):
+
+	return x 
+
+def soft_curvelets(x, lamda):
+
+
+
+	return x
+
