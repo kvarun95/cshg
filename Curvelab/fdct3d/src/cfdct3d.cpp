@@ -131,25 +131,18 @@ void call_fdct3d(double* xre_io, int n_xre_io,
         std::cout << "n_W :" << n_W << std::endl;
         std::cout << "S :" << S << std::endl;
 
-        // CpxNumTns x(N1,N2,N3);
-        // for (int i=0;i<N1;i++) {
-        //     for (int j=0;j<N2;j++) {
-        //         for (int k=0;k<N3;k++) {
-        //             x(i,j,k) = cpx(xre_io[N2*N3*i+N3*j+k], xim_io[N2*N3*i+N3*j+k]);
-        //         }
-        //     }
-        // }
-
-        int nbscales1 = 2;
-        int nbdstz_coarse1 = 3;
-        int m = 256; int nn = 256; int p = 10; int ac1 = 0;
-        srand48( (long)time(NULL) );
-        CpxNumTns x(m,nn,p);
-        for(int i=0; i<m; i++)	 for(int j=0; j<nn; j++)		for(int k=0; k<p; k++)		  x(i,j,k) = cpx(drand48()-0.5, 0);
+        CpxNumTns x(N1,N2,N3);
+        for (int i=0;i<N1;i++) {
+            for (int j=0;j<N2;j++) {
+                for (int k=0;k<N3;k++) {
+                    x(i,j,k) = cpx(xre_io[N2*N3*i+N3*j+k], xim_io[N2*N3*i+N3*j+k]);
+                }
+            }
+        }
         
         vector< vector<CpxNumTns> > c;
         std::cout << "about to solve forward" << std::endl;
-        fdct3d_forward(m, nn, p, nbscales1, nbdstz_coarse1, ac1, x, c);
+        fdct3d_forward(N1, N2, N3, nbscales, nbdstz_coarse, ac, x, c);
         std::cout << "solved forward" << std::endl;
         // conditional statements checking if dimensions are okay
         bool s1=0; bool s2=0;
