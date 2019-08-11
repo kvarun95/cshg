@@ -1,6 +1,8 @@
 import numpy as np 
 import scipy.linalg as la 
 import scipy.sparse.linalg as sla
+import mkl
+mkl.set_num_threads(mkl.get_max_threads())
 
 import utils
 from forward_model import *
@@ -9,15 +11,18 @@ from mask import *
 
 from numpy import cos, sin, pi, sqrt
 
-class fista_solver:
+class LassoSolver:
 
-    def __init__(self, fwd_op, backtracking=False):
+    def __init__(self, fwd_op, backtracking=False, use_fista=False):
 
-        mv = lambda z : fwd_op.adjoint(fwd_op.matmul(z))
-        self.Normal = sla.LinearOperator((fwd_op.shape[1], fwd_op.shape[1]), 
-                                    matvec=mv)
-        
-        self.lip = 2*sla.eigs(self.Normal, k=1)
+        self.use_fista = use_fista
+
+        if use_fista:
+            mv = lambda z : fwd_op.adjoint(fwd_op(z.reshape(fwd_op.shapeOI[1]))).reshape(fwd_op.shape[1])
+            self.Normal = sla.LinearOperator((fwd_op.shape[1], fwd_op.shape[1]), 
+                                        matvec=mv) # v time consuming step
+            
+            self.lip = 2*sla.eigs(self.Normal, k=1)[0].real
         self.fwd_op = fwd_op
         self.backtracking = backtracking
 
@@ -46,6 +51,7 @@ class fista_solver:
         x = x_init.copy()
         step = 1./self.lip
         fwd_op = self.fwd_op
+        t = t_init
 
         for i in range(n_iter):
 
@@ -79,6 +85,72 @@ class fista_solver:
 
         return x, y, t
 
+
+    def solve_ista(self, z_meas,
+            x_init=np.array([None]),
+            n_iter=100,
+            step=1.e-3,
+            lam=5.e-4,
+            step_scheduling=1.,
+            reg_scheduling=1.,
+            verbose=True,
+            verbose_rate=10,
+            stop_criterion=None,
+            sparsifying=None):
+
+        """ Solves lasso using Iterative Shrinkage and Thresholding.
+        `x_init`         : Initial value/estimate. Default is all zeros.
+        `n_iter`         : Maximum number of iterations. `int`.
+        `step`           : Step size for gradient step (`float`/ `double` scalar)
+        `lam`            : Regularization parameter
+        `reg_scheduling` : Regularization scheduling. Multiply `lam` at each iteration by this quantity.
+        `verbose`        :
+        `verbose_rate`   : Print after each `verbose_rate` iterations
+        `stop_criterion` :
+        `sparsifying`    : Default `None`. No special sparsifying transform. 
+                           If `"wavelets"`, use  wavelet transform. `pywt` package needs to be installed.
+                           If `"curvelets"`, use curvelet transform. `pycfdct3d` package in `../Curvelab/fdct3d/src/` needs to be installed.
+        """
+
+        if x_init.all()==None:
+            x_init = np.zeros(self.fwd_op.shapeOI[1], dtype=complex)
+
+        x = x_init.copy()
+        fwd_op = self.fwd_op
+
+        for i in range(n_iter):
+
+            # gradient step 
+            x = x - step * fwd_op.adjoint(fwd_op(x) - z_meas)
+
+            # proximal step
+            if sparsifying==None:
+                xnext = utils.soft(x, lam)
+            elif sparsifying=="wavelets":
+                xnext = utils.soft_wavelets(x, lam)
+            elif sparsifying=="curvelets":
+                xnext = utils.soft_curvelets(x, lam)
+
+            # real projection
+            x.imag = 0.
+
+            # Regularization scheduling
+            lam = reg_scheduling * lam
+
+            if verbose and i%verbose_rate==0:
+                loss = la.norm(fwd_op(x)-z_meas)**2 /np.prod(z_meas.shape)
+                print("Iter :", i, ", MSE :", loss)
+
+            if stop_criterion!=None:
+
+                err_prev = err
+                err = la.norm(fwd_op(x)-z_meas)
+                
+                if abs(err-err_prev)/err < stop_criterion:
+                    return x
+
+        return x
+        
                 
 
         

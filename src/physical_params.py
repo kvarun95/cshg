@@ -5,9 +5,12 @@ SPEEDOFLIGHT = 299.792458 # um/s
 WAVELENGTH = 0.5 # um
 NA = 0.65
 
+# refractive index of tissue
+REF_IDX = 1.35
+
 # length scales
 L = 166.4 # um
-LZ = 10. # um
+LZ = 25. # um
 
 def create_grid(N, NZ):
 

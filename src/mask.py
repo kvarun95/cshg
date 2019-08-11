@@ -33,7 +33,7 @@ class masks:
 		`open_rate` : Ratio of open apertures to total apertures in teh mask
 		`one_aperture_size` : dimensions of one aperture
 		`type` : Type of coded aperture patterns to create. 
-				`'random'` refers to random patterns
+				`'random'` refers to random patterns binary amplitude patterns 
 				`'nra'` refers to non-redundant array patterns
 				`'nrp'` refers to non-repeating array patterns
 				`'darkfield'` refers to setting the DC to zero always

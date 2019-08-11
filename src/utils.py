@@ -1,10 +1,19 @@
 import sys 
 import numpy as np 
 import scipy.linalg as la 
+from scipy.ndimage.interpolation import map_coordinates
+from scipy.ndimage.filters import gaussian_filter
+
+# for wavelet transforms
 import pywt 
+WAVELET = pywt.Wavelet('coif3')
+LEVEL = 2
+
+# for curvelet transforms
 sys.path.append("../Curvelab/fdct3d/src/")
 
 from numpy import pi, cos, sin, exp
+
 
 def add_noise(x, SNR, mode='gaussian'):
 	""" Adds gaussian noise of a given SNR to a signal
@@ -38,13 +47,45 @@ def cis(theta):
 	return cos(theta) + 1.j*sin(theta)
 
 
-def soft(x, lamda):
+def elastic_distortion(image, alpha, sigma):
+	
+	shape = image.shape
+	dx = alpha * gaussian_filter((np.random.rand(*shape) * 2 - 1), sigma, mode="constant", cval=0)
+	dy = alpha * gaussian_filter((np.random.rand(*shape) * 2 - 1), sigma, mode="constant", cval=0)
 
-	return x
+	x, y = np.meshgrid(np.arange(shape[0]), np.arange(shape[1]))
+	indices = np.reshape(y+dy, (-1, 1)), np.reshape(x+dx, (-1, 1))
+
+	distorted_image_real = map_coordinates(image.real, indices, order=1, mode='reflect')
+	distorted_image_imag = map_coordinates(image.imag, indices, order=1, mode='reflect')
+	return distorted_image_real.reshape(image.shape) + 1.j*distorted_image_imag.reshape(image.shape)
+
+
+def soft(x, lamda):
+	""" `x` : Complex numpy ndarray
+	    `lamda` : Real Scalar
+	"""
+	are = abs(x.real)/abs(x)
+	aim = abs(x.imag)/abs(x)
+
+	zreal = (x.real - lamda*are)*(x.real > lamda*are) + (x.real + lamda*are)*(x.real < lamda*are) 
+	zimag = (x.imag - lamda*aim)*(x.imag > lamda*aim) + (x.imag + lamda*aim)*(x.imag < lamda*aim)	
+
+	return zreal + 1.j*zimag
+
 
 def soft_wavelets(x, lamda):
 
-	return x 
+	# coeffs = pywt.wavedecn(x, wavelet=WAVELET, level=LEVEL, axes=(0,1) )
+	coeffs = pywt.wavedecn(x, wavelet=WAVELET, level=LEVEL)
+	# c, slices = pywt.coeffs_to_array(coeffs, axes=(0,1))
+	c, slices = pywt.coeffs_to_array(coeffs)
+	c = soft(c, lamda)
+	coeffs = pywt.array_to_coeffs(c, slices, output_format='wavedecn')
+
+	# return pywt.waverecn(coeffs, WAVELET, axes=(0,1))
+	return pywt.waverecn(coeffs, WAVELET)
+
 
 def soft_curvelets(x, lamda):
 

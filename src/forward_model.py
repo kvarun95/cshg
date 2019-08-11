@@ -11,7 +11,7 @@ from numpy import pi, cos, sin, exp, sqrt
 """ Physically realistic forward model class and methods for optical microscopy.
 """
 
-class fresnelprop(sla.LinearOperator):
+class FresnelProp(object):
     """ Fresnel propagator using the angular spectrum method.
     """
 
@@ -21,11 +21,10 @@ class fresnelprop(sla.LinearOperator):
                 dtype=complex,
                 include_shg=False):
 
-        super(fresnelprop, self).__init__(
-            dtype=dtype,
-            shape=(np.prod(output_shape), np.prod(input_shape)),
-            )
         self.shapeOI = [output_shape, input_shape]
+        self.shape = ( np.prod(output_shape), np.prod(input_shape) )
+        self.dtype = dtype
+        self.include_shg = include_shg
 
         assert input_shape[0]==input_shape[1], "Input X and Y shapes must be equal."        
         self.N = input_shape[0]
@@ -45,17 +44,32 @@ class fresnelprop(sla.LinearOperator):
         self.spatial_grid = spatial_grid
 
         magf2 = gridf[...,0]**2 + gridf[...,1]**2
-        self.NAmask = float(magf2 >= (NA/WAVELENGTH)**2)
+        self.NAmask = (magf2 <= (NA/WAVELENGTH)**2).astype(float)
         self.kernel = np.zeros(input_shape, dtype=complex)
 
-        for i in range(len(Z)):
-            phase = -2.*pi*Z[i]*sqrt((1./WAVELENGTH)**2 - magf2)
-            self.kernel[...,:] = utils.cis(phase) * self.NAmask
-
-        self.adj_kernel = self.kernel.conj()
-
         if include_shg:
-            raise NotImplementedError("Forward model simulation including the SHG has not been implemented yet")
+            for i in range(len(Z)):
+                # starting phase due to propagation of fundamental, and phase matching
+                phase0 = -2.*pi* (REF_IDX/WAVELENGTH) *Z[i]
+                phase = -2.*pi* (LZ-Z[i]) *sqrt((REF_IDX/WAVELENGTH)**2 - magf2)
+                self.kernel[...,i] = utils.cis(phase) * self.NAmask * utils.cis(phase0)
+    
+            self.adj_kernel = self.kernel.conj()
+
+        else:
+            for i in range(len(Z)):
+                phase = -2.*pi* (LZ-Z[i]) *sqrt((REF_IDX/WAVELENGTH)**2 - magf2)
+                self.kernel[...,i] = utils.cis(phase) * self.NAmask
+    
+            self.adj_kernel = self.kernel.conj()
+
+
+    def __call__(self, x):
+        return self._matvec(x)
+
+
+    def adjoint(self, x):
+        return self._adjoint(x)
 
 
     def _matvec(self, x):
@@ -87,19 +101,24 @@ class fresnelprop(sla.LinearOperator):
         return x
 
 
-class fourierprop(sla.LinearOperator):
+class FourierProp(object):
     """ Fourier optics lens propagation model. Described as:
     Fourier lens -> mask -> fourier lens 
     """
     
     def __init__(self, mask, dtype=complex):
         
-        super(fourierprop, self).__init__(
-            dtype=dtype,
-            shape=(np.prod(mask.shape) * mask.num, np.prod(mask.shape)),
-        )
+        self.shape=( np.prod(mask.shape) * mask.num, np.prod(mask.shape) )
         self.shapeOI = ( (mask.num, *mask.shape), mask.shape )
+
         self.mask = mask
+        self.dtype = dtype
+
+    def __call__(self, x):
+        return self._matvec(x)
+
+    def adjoint(self, x):
+        return self._adjoint(x)
 
 
     def _matvec(self, x):
@@ -134,5 +153,29 @@ class fourierprop(sla.LinearOperator):
 
 
 
+class ForwardModel(object):
+
+    def __init__(self, input_shape, mask, include_shg=True):
+
+        assert mask.shape==input_shape[:2], "Improper shapes for mask and input"
+
+        self.dtype=complex,
+        self.shape=( np.prod(mask.shape)*mask.num, np.prod(input_shape) )
+        self.shapeOI = ( (mask.num, *mask.shape), input_shape )
+        self.include_shg = include_shg
+
+        self.uscope = FresnelProp(input_shape, mask.shape, include_shg=self.include_shg)
+        self.fourf = FourierProp(mask)
 
 
+    def __call__(self, x):
+        return self._matvec(x)
+
+    def adjoint(self, y):
+        return self._adjoint(y)
+    
+    def _matvec(self, x):
+        return self.fourf(self.uscope(x))
+
+    def _adjoint(self, y):
+        return self.uscope.adjoint(self.fourf.adjoint(y))
