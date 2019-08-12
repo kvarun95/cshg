@@ -50,15 +50,15 @@ if True:
     y_true = fwd_op(xgt)
     y_meas = utils.add_noise(y_true, 20)
 
-    solver = LassoSolver(fwd_op)
-    solver.solve_fista(y_meas, n_iter=100, sparsifying="wavelets")
-    # xest = solver.solve_ista(y_meas,
-    #                         step=1.e-2,
-    #                         lam=1.e-2,
-    #                         n_iter=100,
-    #                         step_scheduling=0.9999,
-    #                         reg_scheduling=0.999,
-    #                         sparsifying="wavelets")
+    solver = LassoSolver(fwd_op, use_fista=False)
+    # solver.solve_fista(y_meas, n_iter=100, sparsifying="wavelets")
+    xest = solver.solve_ista(y_meas,
+                            step=1.e-2,
+                            lam=1.e-2,
+                            n_iter=500,
+                            step_scheduling=1.,
+                            reg_scheduling=0.999,
+                            sparsifying="wavelets")
 
 
 def imageplot(i):

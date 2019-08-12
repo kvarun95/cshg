@@ -68,8 +68,8 @@ def soft(x, lamda):
 	are = abs(x.real)/abs(x)
 	aim = abs(x.imag)/abs(x)
 
-	zreal = (x.real - lamda*are)*(x.real > lamda*are) + (x.real + lamda*are)*(x.real < lamda*are) 
-	zimag = (x.imag - lamda*aim)*(x.imag > lamda*aim) + (x.imag + lamda*aim)*(x.imag < lamda*aim)	
+	zreal = (x.real - lamda*are)*(x.real > lamda*are) + (x.real + lamda*are)*(x.real < -lamda*are) 
+	zimag = (x.imag - lamda*aim)*(x.imag > lamda*aim) + (x.imag + lamda*aim)*(x.imag < -lamda*aim)	
 
 	return zreal + 1.j*zimag
 

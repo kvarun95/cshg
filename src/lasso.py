@@ -72,8 +72,8 @@ class LassoSolver:
             x = xnext
 
             if verbose and i%verbose_rate==0:
-                loss = la.norm(fwd_op(x)-z_meas)**2 
-                print("Iter :", i, ", Loss :", loss)
+                loss = la.norm(fwd_op(x)-z_meas)**2 /np.prod(z_meas.shape)
+                print("Iter :", i, ", MSE :", loss)
 
             if stop_criterion!=None:
 
@@ -136,6 +136,9 @@ class LassoSolver:
 
             # Regularization scheduling
             lam = reg_scheduling * lam
+
+            # Step scheduling
+            step = step_scheduling * step
 
             if verbose and i%verbose_rate==0:
                 loss = la.norm(fwd_op(x)-z_meas)**2 /np.prod(z_meas.shape)
