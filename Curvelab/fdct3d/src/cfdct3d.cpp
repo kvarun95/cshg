@@ -50,7 +50,7 @@ void call_fdct3d(double* xre_io, int n_xre_io,
                 int* W, int n_W,
                 int N1, int N2, int N3, 
                 int nbscales, int nbdstz_coarse, 
-                int ac, char option)
+                int ac, double lamda, char option)
 {
     srand(time(NULL));
 
@@ -127,10 +127,6 @@ void call_fdct3d(double* xre_io, int n_xre_io,
 
     if (option=='F') {
 
-        std::cout << "in c" << std::endl;
-        std::cout << "n_W :" << n_W << std::endl;
-        std::cout << "S :" << S << std::endl;
-
         CpxNumTns x(N1,N2,N3);
         for (int i=0;i<N1;i++) {
             for (int j=0;j<N2;j++) {
@@ -141,9 +137,7 @@ void call_fdct3d(double* xre_io, int n_xre_io,
         }
         
         vector< vector<CpxNumTns> > c;
-        std::cout << "about to solve forward" << std::endl;
         fdct3d_forward(N1, N2, N3, nbscales, nbdstz_coarse, ac, x, c);
-        std::cout << "solved forward" << std::endl;
         // conditional statements checking if dimensions are okay
         bool s1=0; bool s2=0;
         if (S!=n_W || S!=c.size()) {
@@ -180,13 +174,113 @@ void call_fdct3d(double* xre_io, int n_xre_io,
     }
 
 
-    // if (option=='B') {
+    // inverse curvelet transform
+    if (option=='B') {
+        CpxNumTns x(N1,N2,N3);
+        vector< vector<CpxNumTns> > c;        
+        // run a forward fdct3d just to get the correct shape for c
+        fdct3d_forward(N1, N2, N3, nbscales, nbdstz_coarse, ac, x, c);
+        
+        // transfer the curvelet coefficients into the curvelet array
+        int idx=0;
+        int n=0;
+        for (int s=0;s<S;s++) {
+            for (int w=0;w<W[s];w++) {
+                for (int i=0;i<nxs_io[n];i++) {
+                    for (int j=0;j<nys_io[n];j++) {
+                        for (int k=0;k<nzs_io[n];k++) {
+                            c[s][w](i,j,k) = cpx(cre_io[idx], cim_io[idx]);
+                            idx++;
+                        }
+                    }
+                }
+                n++;
+            }
+        }
 
-    // }
+        // empty x 
+        clear(x);
+        fdct3d_inverse(N1, N2, N3, nbscales, nbdstz_coarse, ac, c, x);
+        // unpack real space vector into the 1d arrays
+        for (int i=0;i<N1;i++) {
+            for (int j=0;j<N2;j++) {
+                for (int k=0;k<N3;k++) {
+                    xre_io[N2*N3*i+N3*j+k] = x(i,j,k).real();
+                    xim_io[N2*N3*i+N3*j+k] = x(i,j,k).imag();
+                }
+            }
+        }
 
-    // if (option=='S') {
+    }
 
-    // }
+
+    // Soft thresholding in the curvelet domain
+    if (option=='S') {
+
+        CpxNumTns x(N1,N2,N3);
+        for (int i=0;i<N1;i++) {
+            for (int j=0;j<N2;j++) {
+                for (int k=0;k<N3;k++) {
+                    x(i,j,k) = cpx(xre_io[N2*N3*i+N3*j+k], xim_io[N2*N3*i+N3*j+k]);
+                }
+            }
+        }
+        
+        vector< vector<CpxNumTns> > c;
+        fdct3d_forward(N1, N2, N3, nbscales, nbdstz_coarse, ac, x, c);
+        // conditional statements checking if dimensions are okay
+        bool s1=0; bool s2=0;
+        if (S!=n_W || S!=c.size()) {
+            s1 = 1;
+            std::cout << "Dimension mismatch : The size of W must match the number of scales S" << std::endl;
+        }
+        else {
+            for (int s=0;s<c.size();s++) {
+                if (W[s]!=c[s].size()) {
+                    s2 = s2 + 1;
+                    std::cout << "Dimension mismatch : The wedge dimensions contained in W[" << s <<"] should match the wedge dimensions nxs["<< s <<"].size()" << std::endl;
+                }
+            }
+        }
+
+        // soft thresholding on curvelet coefficients
+        int idx=0;
+        int n=0;
+        for (int s=0;s<S;s++) {
+            for (int w=0;w<W[s];w++) {
+                for (int i=0;i<nxs_io[n];i++) {
+                    for (int j=0;j<nys_io[n];j++) {
+                        for (int k=0;k<nzs_io[n];k++) {
+                            double cre = c[s][w](i,j,k).real();
+                            double cim = c[s][w](i,j,k).imag();
+                            double are = abs(cre) / sqrt(cre*cre + cim*cim);
+                            double aim = abs(cim) / sqrt(cre*cre + cim*cim);
+                            if (cre>=lamda*are) cre = cre - lamda*are;
+                            if (cre>=-lamda*are && cre<lamda*are) cre = 0.;
+                            if (cre<-lamda*are) cre = cre + lamda*are;
+                            if (cim>=lamda*aim) cim = cim - lamda*aim;
+                            if (cim>=-lamda*aim && cim<lamda*aim) cim = 0.;
+                            if (cim<-lamda*aim) cim = cim + lamda*aim;
+                            c[s][w](i,j,k) = cpx(cre, cim);
+                            idx++;
+                        }
+                    }
+                }
+                n++;
+            }
+        }
+        fdct3d_inverse(N1, N2, N3, nbscales, nbdstz_coarse, ac, c, x);
+
+        for (int i=0;i<N1;i++) {
+            for (int j=0;j<N2;j++) {
+                for (int k=0;k<N3;k++) {
+                    xre_io[N2*N3*i+N3*j+k] = x(i,j,k).real();
+                    xim_io[N2*N3*i+N3*j+k] = x(i,j,k).imag();
+                }
+            }
+        }
+
+    }
 
 }
 

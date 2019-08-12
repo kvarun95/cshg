@@ -13,4 +13,4 @@ void call_fdct3d(double* xre_io, int n_xre_io,
                 int* W, int n_W,
                 int N1, int N2, int N3, 
                 int nbscales, int nbdstz_coarse, 
-                int ac, char option);
+                int ac, double lamda, char option);
