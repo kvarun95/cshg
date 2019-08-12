@@ -1,5 +1,5 @@
 // compile as 
-// g++ -o test_cfdct3d test_cfdct3d.cpp cfdct3d.cpp libfdct3d.a -fPIC -L/home/varun/fftw-2.1.5/fftw/.libs -lfftw
+// g++ -o test_cfdct3d test_cfdct3d.cpp cfdct3d.cpp libfdct3d.a -fPIC -L/Users/vkelkar/fftw-2.1.5/fftw/.libs -lfftw
 
 #include "cfdct3d.hpp"
 #include <numeric> // std::accumulte
@@ -8,12 +8,16 @@
 
 void test_param();
 void test_forward();
+void test_inverse();
+void test_softthreshold();
 
 int main() {
 
     srand(time(NULL));
     // test_param();
-    test_forward();
+    // test_forward();
+    // test_inverse();
+    test_softthreshold();
 
     return 0;
 }
@@ -59,7 +63,7 @@ void test_param() {
                 nxs_io, n_nxs_io,
                 nys_io, n_nys_io,
                 nzs_io, n_nzs_io,
-                W, n_W, N1, N2, N3, nbscales, nbdstz_coarse, ac, option);
+                W, n_W, N1, N2, N3, nbscales, nbdstz_coarse, ac, 0., option);
 
     std::cout << "nbscales :" << nbscales << std::endl;
     for (int i=0;i<n_W;i++) {
@@ -105,7 +109,7 @@ void test_forward() {
     call_fdct3d(xre_io, n_xre_io, xim_io, n_xim_io,
                 cre_io, n_cre_io, cim_io, n_cim_io,
                 ns_placeholder, ns, ns_placeholder, ns, ns_placeholder, ns,
-                W, n_W, N1, N2, N3, nbscales, nbdstz_coarse, ac, 'W');
+                W, n_W, N1, N2, N3, nbscales, nbdstz_coarse, ac, 0., 'W');
 
 
     for (int i=0;i<n_W;i++) {
@@ -120,7 +124,7 @@ void test_forward() {
     call_fdct3d(xre_io, n_xre_io, xim_io, n_xim_io,
                 cre_io , n_cre_io, cim_io, n_cim_io,
                 nxs_io, ns_io, nys_io, ns_io, nzs_io, ns_io,
-                W, n_W, N1, N2, N3, nbscales, nbdstz_coarse, ac, 'P');
+                W, n_W, N1, N2, N3, nbscales, nbdstz_coarse, ac, 0., 'P');
 
     int nc = 0;
     for (int i=0;i<ns_io;i++) {
@@ -133,7 +137,7 @@ void test_forward() {
     call_fdct3d(xre_io, n_xre_io, xim_io, n_xim_io,
                 cre, nc, cim, nc,
                 nxs_io, ns_io, nys_io, ns_io, nzs_io, ns_io,
-                W, n_W, N1, N2, N3, nbscales, nbdstz_coarse, ac, option);
+                W, n_W, N1, N2, N3, nbscales, nbdstz_coarse, ac, 0., option);
 
     // for (int i=0;i<nc;i++) {
     //     std::cout << cre[i] << "," << cim[i] << std::endl;    
@@ -142,8 +146,151 @@ void test_forward() {
 }
 
 
+void test_inverse() {
+
+    char option = 'B';
+    int ac = 0;
+    int nbscales = 2;
+    int nbdstz_coarse = 3;
+    int n_W = nbscales;
+    int* W = new int[n_W];
+
+    int ns = 2;
+    int* ns_placeholder = new int[ns];
+
+    int N1 = 256;
+    int N2 = 256;
+    int N3 = 10;
+
+    int n_xre_io = N1*N2*N3;
+    double* xre_io = new double[n_xre_io];
+    int n_xim_io = N1*N2*N3;
+    double* xim_io = new double[n_xim_io];
+
+    for (int i=0;i<n_xre_io;i++) {
+        xre_io[i] = 0;
+    }
+
+    int n_cre_io = 2;
+    double* cre_io = new double[n_cre_io];
+    int n_cim_io = 2;
+    double* cim_io = new double[n_cim_io];
+
+    call_fdct3d(xre_io, n_xre_io, xim_io, n_xim_io,
+                cre_io, n_cre_io, cim_io, n_cim_io,
+                ns_placeholder, ns, ns_placeholder, ns, ns_placeholder, ns,
+                W, n_W, N1, N2, N3, nbscales, nbdstz_coarse, ac, 0., 'W');
 
 
+    for (int i=0;i<n_W;i++) {
+        std::cout << "W["<<i<<"] :" << W[i] << std::endl;
+    }
+
+    int ns_io = std::accumulate(W, W+n_W, 0);
+    int* nxs_io = new int[ns_io];
+    int* nys_io = new int[ns_io];
+    int* nzs_io = new int[ns_io];
+
+    call_fdct3d(xre_io, n_xre_io, xim_io, n_xim_io,
+                cre_io , n_cre_io, cim_io, n_cim_io,
+                nxs_io, ns_io, nys_io, ns_io, nzs_io, ns_io,
+                W, n_W, N1, N2, N3, nbscales, nbdstz_coarse, ac, 0., 'P');
+
+    int nc = 0;
+    for (int i=0;i<ns_io;i++) {
+        nc = nc + nxs_io[i]*nys_io[i]*nzs_io[i];
+    }
+
+    double* cre = new double[nc];
+    double* cim = new double[nc];
+
+    for (int i=0;i<nc;i++) {
+        cre[i] = (double)rand() / RAND_MAX;
+    }
+
+    call_fdct3d(xre_io, n_xre_io, xim_io, n_xim_io,
+                cre, nc, cim, nc,
+                nxs_io, ns_io, nys_io, ns_io, nzs_io, ns_io,
+                W, n_W, N1, N2, N3, nbscales, nbdstz_coarse, ac, 0., option);
+
+    for (int i=0;i<nc;i++) {
+        std::cout << xre_io[i] << "," << xim_io[i] << std::endl;    
+    }
+
+}
 
 
+void test_softthreshold() {
 
+    double lamda = 0.01;
+    char option = 'S';
+    int ac = 0;
+    int nbscales = 2;
+    int nbdstz_coarse = 3;
+    int n_W = nbscales;
+    int* W = new int[n_W];
+
+    int ns = 2;
+    int* ns_placeholder = new int[ns];
+
+    int N1 = 256;
+    int N2 = 256;
+    int N3 = 10;
+
+    int n_xre_io = N1*N2*N3;
+    double* xre_io = new double[n_xre_io];
+    int n_xim_io = N1*N2*N3;
+    double* xim_io = new double[n_xim_io];
+    double* xre_old = new double[n_xre_io];
+
+    for (int i=0;i<n_xre_io;i++) {
+        xre_io[i] = (double)rand() / RAND_MAX;
+        xre_old[i] = xre_io[i];
+    }
+
+    int n_cre_io = 2;
+    double* cre_io = new double[n_cre_io];
+    int n_cim_io = 2;
+    double* cim_io = new double[n_cim_io];
+
+    call_fdct3d(xre_io, n_xre_io, xim_io, n_xim_io,
+                cre_io, n_cre_io, cim_io, n_cim_io,
+                ns_placeholder, ns, ns_placeholder, ns, ns_placeholder, ns,
+                W, n_W, N1, N2, N3, nbscales, nbdstz_coarse, ac, 0., 'W');
+
+
+    for (int i=0;i<n_W;i++) {
+        std::cout << "W["<<i<<"] :" << W[i] << std::endl;
+    }
+
+    int ns_io = std::accumulate(W, W+n_W, 0);
+    int* nxs_io = new int[ns_io];
+    int* nys_io = new int[ns_io];
+    int* nzs_io = new int[ns_io];
+
+    call_fdct3d(xre_io, n_xre_io, xim_io, n_xim_io,
+                cre_io , n_cre_io, cim_io, n_cim_io,
+                nxs_io, ns_io, nys_io, ns_io, nzs_io, ns_io,
+                W, n_W, N1, N2, N3, nbscales, nbdstz_coarse, ac, 0., 'P');
+
+    int nc = 0;
+    for (int i=0;i<ns_io;i++) {
+        nc = nc + nxs_io[i]*nys_io[i]*nzs_io[i];
+    }
+
+    double* cre = new double[nc];
+    double* cim = new double[nc];
+
+    call_fdct3d(xre_io, n_xre_io, xim_io, n_xim_io,
+                cre, nc, cim, nc,
+                nxs_io, ns_io, nys_io, ns_io, nzs_io, ns_io,
+                W, n_W, N1, N2, N3, nbscales, nbdstz_coarse, ac, lamda, option);
+
+    for (int i=0;i<nc;i++) {
+        std::cout << xre_io[i] << "," << xim_io[i] << std::endl;    
+    }
+    for (int i=0;i<nc;i++) {
+        std::cout << xre_io[i]-xre_old[i] << std::endl;    
+    }
+
+}
