@@ -4,6 +4,11 @@ import scipy.linalg as la
 import scipy.sparse.linalg as sla
 from scipy.sparse.linalg import eigs as sparse_eigs
 import utils
+try:
+	import mkl
+	mkl.set_num_threads(mkl.get_max_threads())
+except ImportError or ModuleNotFoundError:
+	pass
 
 from numpy import pi, cos, sin, sqrt
 
@@ -248,8 +253,8 @@ def wirtinger_flow(I, fwd_op, lamda, z_init='spectral', mu0=0.4, n_iter=100,
 				z = z - reg * (mu/normz02) * z
 
 			if verbose==True and n_iter%10==0:
-				loss = la.norm(I - abs(fwd_op.apply(z))**2)**2
-				print('Loss :', loss)
+				loss = la.norm(I - abs(fwd_op.apply(z))**2)**2/np.prod(I.shape)
+				print('MSE :', loss)
 
 			if include_gersh==True and i>0.8*n_iter and i%5==0:
 				zr = propagator2d(z)
