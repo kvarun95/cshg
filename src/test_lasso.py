@@ -1,14 +1,84 @@
 import numpy as np 
 import matplotlib.pyplot as plt 
-plt.rcParams.update({'font.size': 22})
+# plt.rcParams.update({'font.size': 22})
 from PIL import Image
 import importlib
 import os
+import sys
 
 from lasso import *
 from forward_model import *
 from mask import *
 import utils
+sys.path.append("../Curvelab/fdct3d/src/")
+import pyfdct3d
+import pywt
+
+
+def test_wavelet_sparsity():
+
+    N = 256
+    NZ = 10
+    data_dir = "../data/"
+    filename = "phantom2d.tif"
+    alpha = 70.
+    sigma = 5.
+    num_masks = 10
+
+    WAVELET = pywt.Wavelet('coif3')
+    LEVEL = 2
+
+    im = Image.open(data_dir+filename)
+    xgt = np.zeros((N,N,NZ), dtype=complex)
+    xgt[...,0] = np.array(im).astype(complex)[::2,::2]
+    xgt = xgt / abs(xgt).max()
+
+    for i in range(1,NZ):
+        xgt[:,:,i] = utils.elastic_distortion(xgt[:,:,0], alpha, sigma)
+
+    c,_ = pywt.coeffs_to_array(pywt.wavedecn(xgt, wavelet=WAVELET, level=LEVEL))
+    c = c.flatten()
+    print(c.shape)
+
+    plt.hist(abs(c), bins=1000)
+    plt.yscale('log', nonposy='clip')
+    plt.show()
+
+
+def test_curvelet_sparsity():
+
+    NBSCALES = 4
+    NBDSTZ_COARSE = 2
+    AC = 0
+
+    N = 256
+    NZ = 10
+    data_dir = "../data/"
+    filename = "phantom2d.tif"
+    alpha = 70.
+    sigma = 5.
+    num_masks = 10
+
+    im = Image.open(data_dir+filename)
+    xgt = np.zeros((N,N,NZ), dtype=complex)
+    xgt[...,0] = np.array(im).astype(complex)[::2,::2]
+    xgt = xgt / abs(xgt).max()
+
+    for i in range(1,NZ):
+        xgt[:,:,i] = utils.elastic_distortion(xgt[:,:,0], alpha, sigma)
+        xgt[:,:,i] = xgt[:,:,i]+xgt[:,::-1,i]+xgt[::-1,:,i]
+
+    params = pyfdct3d.get_curvelet_params(xgt.shape, NBSCALES, NBDSTZ_COARSE, AC)
+    c = pyfdct3d.curvedec3(xgt, params)
+    xest = pyfdct3d.curverec3(c, params)
+    print(np.allclose(xest, xgt))
+    print(params)
+
+    plt.hist(abs(c), bins=1000)
+    plt.yscale('log', nonposy='clip')
+    plt.show()
+
+
 
 # def test_lasso_artificial_data_real_masks():
 if True:
@@ -48,17 +118,22 @@ if True:
 
     # # generate artificial data
     y_true = fwd_op(xgt)
-    y_meas = utils.add_noise(y_true, 20)
+    y_meas = utils.add_noise(y_true, 100)
+    x_init = 0.01*fwd_op.adjoint(y_meas)
 
     solver = LassoSolver(fwd_op, use_fista=False)
     # solver.solve_fista(y_meas, n_iter=100, sparsifying="wavelets")
     xest = solver.solve_ista(y_meas,
+                            x_init=x_init,
                             step=1.e-2,
-                            lam=1.e-2,
-                            n_iter=500,
-                            step_scheduling=1.,
-                            reg_scheduling=0.999,
-                            sparsifying="wavelets")
+                            lam=0.8e-2,
+                            n_iter=100,
+                            step_scheduling=0.999,
+                            reg_scheduling=0.95,
+                            sparsifying="curvelets")
+
+    recon_mse = la.norm(xest-xgt)**2/np.prod(xgt.shape)
+    print(recon_mse)
 
 
 def imageplot(i):

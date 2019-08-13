@@ -1,5 +1,13 @@
 import numpy as np 
-import pycfdct3d
+try:
+	import pycfdct3d # for cython installation
+except ImportError:
+	print("`pyfdct3d` cython installation does not exist. trying to import swig installation.")
+	try:
+		import cfdct3d # for swig installation
+	except ImportError:
+		print("`cfdct3d` swig installation does not exist. Please use wavelets.")
+        
 
 def get_curvelet_params(input_shape, nbscales, nbdstz_coarse, ac=0):
 

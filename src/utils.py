@@ -11,6 +11,10 @@ LEVEL = 2
 
 # for curvelet transforms
 sys.path.append("../Curvelab/fdct3d/src/")
+import pyfdct3d
+NBSCALES = 3 # number of scales of the curvelet transform
+NBDSTZ_COARSE = 2
+AC = 0 # wavelet or curvelet initialization
 
 from numpy import pi, cos, sin, exp
 
@@ -87,9 +91,12 @@ def soft_wavelets(x, lamda):
 	return pywt.waverecn(coeffs, WAVELET)
 
 
-def soft_curvelets(x, lamda):
+def curvelet_params(input_shape):
+
+	return pyfdct3d.get_curvelet_params(input_shape, NBSCALES, NBDSTZ_COARSE, AC)
 
 
+def soft_curvelets(x, lamda, params):
 
-	return x
+	return pyfdct3d.curvesoft3(x, lamda, params)
 

@@ -1,8 +1,11 @@
 import numpy as np 
 import scipy.linalg as la 
 import scipy.sparse.linalg as sla
-import mkl
-mkl.set_num_threads(mkl.get_max_threads())
+try:
+    import mkl
+    mkl.set_num_threads(mkl.get_max_threads())
+except ModuleNotFoundError:
+    pass
 
 import utils
 from forward_model import *
@@ -47,6 +50,9 @@ class LassoSolver:
         if x_init.all()==None:
             x_init = np.zeros(self.fwd_op.shapeOI[1], dtype=complex)
 
+        if sparsifying=="curvelets":
+            self.curve_params = utils.curvelet_params(x_init.shape)
+
         y = x_init.copy()
         x = x_init.copy()
         step = 1./self.lip
@@ -62,7 +68,7 @@ class LassoSolver:
             elif sparsifying=="wavelets":
                 xnext = utils.soft_wavelets(y, 1./self.lip)
             elif sparsifying=="curvelets":
-                xnext = utils.soft_curvelets(y, 1./self.lip)
+                xnext = utils.soft_curvelets(y, 1./self.lip, self.curve_params)
 
             tnext = 0.5 * (1 + sqrt(1+4*t**2))
 
@@ -115,6 +121,9 @@ class LassoSolver:
         if x_init.all()==None:
             x_init = np.zeros(self.fwd_op.shapeOI[1], dtype=complex)
 
+        if sparsifying=="curvelets":
+            self.curve_params = utils.curvelet_params(x_init.shape)
+
         x = x_init.copy()
         fwd_op = self.fwd_op
 
@@ -129,7 +138,7 @@ class LassoSolver:
             elif sparsifying=="wavelets":
                 xnext = utils.soft_wavelets(x, lam)
             elif sparsifying=="curvelets":
-                xnext = utils.soft_curvelets(x, lam)
+                xnext = utils.soft_curvelets(x, lam, self.curve_params)
 
             # real projection
             x.imag = 0.
