@@ -11,7 +11,10 @@ LEVEL = 2
 
 # for curvelet transforms
 sys.path.append("../Curvelab/fdct3d/src/")
-import pyfdct3d
+try:
+	import pyfdct3d
+except ImportError:
+	pass
 NBSCALES = 3 # number of scales of the curvelet transform
 NBDSTZ_COARSE = 2
 AC = 0 # wavelet or curvelet initialization
