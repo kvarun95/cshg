@@ -84,12 +84,13 @@ def test_curvelet_sparsity():
 if True:
 
     N = 256
-    NZ = 10
+    NZ = 5
     data_dir = "../data/"
     filename = "phantom2d.tif"
     alpha = 70.
     sigma = 5.
     num_masks = 10
+    type_masks = "ex"
 
     im = Image.open(data_dir+filename)
     xgt = np.zeros((N,N,NZ), dtype=complex)
@@ -108,11 +109,14 @@ if True:
 
     mask = masks(num_masks, (N,N))
 
-    assert len(mask_filenames)==num_masks, "Number of masks does not match number of files"
-    mask.get_mask(mask_filenames)
-    # rescale mask between -1 and 1
-    mask.value = 2 * (mask.value/255.) - 1
-    mask.value = -mask.value
+    if type_masks=="ex":
+        assert len(mask_filenames)==num_masks, "Number of masks does not match number of files"
+        mask.get_mask(mask_filenames)
+        # rescale mask between -1 and 1
+        mask.value = 2 * (mask.value/255.) - 1
+        mask.value = -mask.value
+    else:
+        mask.create(open_rate=0.5, one_aperture_size=32, Type='phase_binary')
 
     fwd_op = ForwardModel(xgt.shape, mask, include_shg=True)
 
@@ -126,14 +130,18 @@ if True:
     xest = solver.solve_ista(y_meas,
                             x_init=x_init,
                             step=1.e-2,
-                            lam=0.8e-2,
+                            lam=1.2e-2,
                             n_iter=100,
                             step_scheduling=0.999,
                             reg_scheduling=0.95,
                             sparsifying="curvelets")
 
     recon_mse = la.norm(xest-xgt)**2/np.prod(xgt.shape)
-    print(recon_mse)
+    recon_psnr = 10*np.log10(abs(xgt).max()**2/recon_mse)
+    rel_error = sqrt(recon_mse)/la.norm(xgt)
+    print("Reconstruction Mean Squared Error :", recon_mse)
+    print("Reconstruction PSNR :", recon_psnr)
+    print("Reconstruction Relative Error :", rel_error*100, "%")
 
 
 def imageplot(i):

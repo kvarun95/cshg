@@ -79,6 +79,9 @@ class masks:
 		elif Type=='nrp':
 			pass
 
+		else:
+			raise ValueError("Undefined mask type.")
+
 		return self.value
 
 	def get_mask(self, filenames):
