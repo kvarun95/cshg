@@ -11,15 +11,24 @@
 
 /*
 ```
-void fdct3dpipe(char option, int N1, int N2, int N3, int nbscales, int nbdstz_coarse, int ac,
-                double* x, double* c)
+void call_fdct3d(double* xre_io, int n_xre_io,
+                double* xim_io, int n_xim_io,
+                double* cre_io, int n_cre_io,
+                double* cim_io, int n_cim_io,
+                int* nxs_io, int n_nxs_io,
+                int* nys_io, int n_nys_io,
+                int* nzs_io, int n_nzs_io,
+                int* W, int n_W,
+                int N1, int N2, int N3, 
+                int nbscales, int nbdstz_coarse, 
+                int ac, double lamda, char option)
 ```
 Function for implementing three fdct3d functions in one function which is interfaced with python using swig. 
 Argument:
 _input_ `char option` :
 ... `'P'` : execute `fdct3d_params()`
 ... `'F'` : execute `fdct3d_forward()`
-... `'I'` : execute `fdct3d_inverse()`
+... `'B'` : execute `fdct3d_inverse()`
 
 _input_ `int N1`, `int N2`, `int N3` : Dimensions of real-space grid.
 
@@ -126,7 +135,9 @@ void call_fdct3d(double* xre_io, int n_xre_io,
 
 
     if (option=='F') {
+        // Forward curvelet transform. 
 
+        // Populate the x tensor from the input real and imaginary parts
         CpxNumTns x(N1,N2,N3);
         for (int i=0;i<N1;i++) {
             for (int j=0;j<N2;j++) {
@@ -217,6 +228,7 @@ void call_fdct3d(double* xre_io, int n_xre_io,
     // Soft thresholding in the curvelet domain
     if (option=='S') {
 
+        // Populate the real space tensor
         CpxNumTns x(N1,N2,N3);
         for (int i=0;i<N1;i++) {
             for (int j=0;j<N2;j++) {

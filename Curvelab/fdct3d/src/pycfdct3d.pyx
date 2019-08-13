@@ -11,11 +11,11 @@ cdef extern from "cfdct3d.hpp":
                     int* W, int n_W,
                     int N1, int N2, int N3, 
                     int nbscales, int nbdstz_coarse, 
-                    int ac, char option)
+                    int ac, double lamda, char option)
 
 import numpy as np
 
-def pycall_fdct3d(xre, xim, cre, cim, nxs, nys, nzs, w, N1, N2, N3, nbscales, nbdstz_coarse, ac, option):
+def pycall_fdct3d(xre, xim, cre, cim, nxs, nys, nzs, w, N1, N2, N3, nbscales, nbdstz_coarse, ac, lamda, option):
 
     xre = xre.astype('double')
     xim = xim.astype('double')
@@ -66,6 +66,6 @@ def pycall_fdct3d(xre, xim, cre, cim, nxs, nys, nzs, w, N1, N2, N3, nbscales, nb
                 &nys_mv[0], nys_mv.shape[0],
                 &nzs_mv[0], nzs_mv.shape[0],
                 &w_mv[0], w_mv.shape[0],
-                N1, N2, N3, nbscales, nbdstz_coarse, ac, ord(option))
+                N1, N2, N3, nbscales, nbdstz_coarse, ac, lamda, ord(option))
 
     return xre, xim, cre, cim, nxs, nys, nzs, w

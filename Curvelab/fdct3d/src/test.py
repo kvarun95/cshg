@@ -9,6 +9,7 @@ def test_w():
 
     option = 'W'
     ac = 0
+    lamda = 0.
     nbscales = 2
     nbdstz_coarse = 3
     n_W = nbscales
@@ -35,7 +36,7 @@ def test_w():
                                                                    cre_io, cim_io,
                                                                    ns_placeholder, ns_placeholder, ns_placeholder, W,
                                                                    N1, N2, N3, nbscales, nbdstz_coarse,
-                                                                   ac, option)
+                                                                   ac, lamda, option)
 
     print(w)
 
@@ -44,6 +45,7 @@ def test_param():
 
     option = 'P'
     ac = 0
+    lamda = 0.
     nbscales = 3
     nbdstz_coarse = 3
     n_W = 3
@@ -75,7 +77,7 @@ def test_param():
                                                                    cre_io, cim_io,
                                                                    nxs_io, nys_io, nzs_io, W,
                                                                    N1, N2, N3, nbscales, nbdstz_coarse,
-                                                                   ac, option)
+                                                                   ac, lamda, option)
 
     i=0
     for s in range(nbscales):
@@ -89,6 +91,7 @@ def test_forward():
 
     option = 'F'
     ac = 0
+    lamda = 0.
     nbscales = 2
     nbdstz_coarse = 3
     n_W = nbscales
@@ -115,7 +118,7 @@ def test_forward():
                         cre_io, cim_io,
                         ns_placeholder, ns_placeholder, ns_placeholder, W,
                         N1, N2, N3, nbscales, nbdstz_coarse,
-                        ac, 'W')
+                        ac, lamda, 'W')
 
     print("W :", W)
 
@@ -128,7 +131,7 @@ def test_forward():
                         cre_io, cim_io,
                         nxs_io, nys_io, nzs_io, W,
                         N1, N2, N3, nbscales, nbdstz_coarse,
-                        ac, 'P')
+                        ac, lamda, 'P')
 
     nc = sum(nxs_io*nys_io*nzs_io)
     cre_io = np.zeros((nc,))
@@ -141,11 +144,134 @@ def test_forward():
                         cre_io, cim_io,
                         nxs_io, nys_io, nzs_io, W,
                         N1, N2, N3, nbscales, nbdstz_coarse,
-                        ac, option)
+                        ac, lamda, option)
 
 
+def test_inverse():
 
 
+    option = 'B'
+    ac = 0
+    lamda = 0.
+    nbscales = 2
+    nbdstz_coarse = 3
+    n_W = nbscales
+    W = np.zeros((n_W,), dtype=np.int32)
+
+    ns = 2
+    ns_placeholder = np.zeros((ns,), dtype=np.int32)
+    
+    N1 = 256
+    N2 = 256
+    N3 = 10
+
+    n_xre_io = N1*N2*N3
+    xre_io = np.zeros((n_xre_io,))
+    n_xim_io = N1*N2*N3
+    xim_io = np.zeros((n_xim_io,))
+
+    n_cre_io = 2
+    cre_io = np.zeros((n_cre_io,))
+    n_cim_io = 2
+    cim_io = np.zeros((n_cim_io,))
+
+    xre_io, xim_io, cre_io, cim_io, nxs_io, nys_io, nzs_io, W = pycfdct3d.pycall_fdct3d(xre_io, xim_io,
+                        cre_io, cim_io,
+                        ns_placeholder, ns_placeholder, ns_placeholder, W,
+                        N1, N2, N3, nbscales, nbdstz_coarse,
+                        ac, lamda, 'W')
+
+    print("W :", W)
+
+    ns_io = sum(W)
+    nxs_io = np.zeros((ns_io,), dtype=np.int32)
+    nys_io = np.zeros((ns_io,), dtype=np.int32)
+    nzs_io = np.zeros((ns_io,), dtype=np.int32)
+
+    xre_io, xim_io, cre_io, cim_io, nxs_io, nys_io, nzs_io, W = pycfdct3d.pycall_fdct3d(xre_io, xim_io,
+                        cre_io, cim_io,
+                        nxs_io, nys_io, nzs_io, W,
+                        N1, N2, N3, nbscales, nbdstz_coarse,
+                        ac, lamda, 'P')
+
+    nc = sum(nxs_io*nys_io*nzs_io)
+    cre_io = np.random.rand(nc).astype('double')
+    cim_io = np.random.rand(nc).astype('double')
+
+    xre_io = np.zeros((N1*N2*N3,))
+    xim_io = np.zeros((N1*N2*N3,))
+
+    xre_io, xim_io, cre_io, cim_io, nxs_io, nys_io, nzs_io, W = pycfdct3d.pycall_fdct3d(xre_io, xim_io,
+                        cre_io, cim_io,
+                        nxs_io, nys_io, nzs_io, W,
+                        N1, N2, N3, nbscales, nbdstz_coarse,
+                        ac, lamda, option)
 
 
+def test_softthreshold():
 
+    option = 'S'
+    ac = 0
+    lamda = 0.01
+    nbscales = 2
+    nbdstz_coarse = 3
+    n_W = nbscales
+    W = np.zeros((n_W,), dtype=np.int32)
+
+    ns = 2
+    ns_placeholder = np.zeros((ns,), dtype=np.int32)
+    
+    N1 = 256
+    N2 = 256
+    N3 = 10
+
+    n_xre_io = N1*N2*N3
+    xre_io = np.zeros((n_xre_io,))
+    n_xim_io = N1*N2*N3
+    xim_io = np.zeros((n_xim_io,))
+
+    n_cre_io = 2
+    cre_io = np.zeros((n_cre_io,))
+    n_cim_io = 2
+    cim_io = np.zeros((n_cim_io,))
+
+    xre_io, xim_io, cre_io, cim_io, nxs_io, nys_io, nzs_io, W = pycfdct3d.pycall_fdct3d(xre_io, xim_io,
+                        cre_io, cim_io,
+                        ns_placeholder, ns_placeholder, ns_placeholder, W,
+                        N1, N2, N3, nbscales, nbdstz_coarse,
+                        ac, lamda, 'W')
+
+    print("W :", W)
+
+    ns_io = sum(W)
+    nxs_io = np.zeros((ns_io,), dtype=np.int32)
+    nys_io = np.zeros((ns_io,), dtype=np.int32)
+    nzs_io = np.zeros((ns_io,), dtype=np.int32)
+
+    xre_io, xim_io, cre_io, cim_io, nxs_io, nys_io, nzs_io, W = pycfdct3d.pycall_fdct3d(xre_io, xim_io,
+                        cre_io, cim_io,
+                        nxs_io, nys_io, nzs_io, W,
+                        N1, N2, N3, nbscales, nbdstz_coarse,
+                        ac, lamda, 'P')
+
+    nc = sum(nxs_io*nys_io*nzs_io)
+    cre_io = np.zeros((nc,))
+    cim_io = np.zeros((nc,))
+
+    xre_io = np.random.rand(N1*N2*N3).astype('double')
+    xim_io = np.random.rand(N1*N2*N3).astype('double')
+    xre_old = xre_io.copy()
+    xim_old = xim_io.copy()
+
+    xre_io, xim_io, cre_io, cim_io, nxs_io, nys_io, nzs_io, W = pycfdct3d.pycall_fdct3d(xre_io, xim_io,
+                        cre_io, cim_io,
+                        nxs_io, nys_io, nzs_io, W,
+                        N1, N2, N3, nbscales, nbdstz_coarse,
+                        ac, lamda, option)
+
+    print(np.allclose(xre_io, xre_old))
+    print(np.allclose(xim_io, xim_old))
+    print(xre_io-xre_old)
+    print(xim_io-xim_old)
+    print(abs(xre_io-xre_old).max())
+    print(abs(xim_io-xim_old).max())

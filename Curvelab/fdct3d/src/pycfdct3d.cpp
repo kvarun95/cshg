@@ -1845,6 +1845,7 @@ static const char __pyx_k_class[] = "__class__";
 static const char __pyx_k_error[] = "error";
 static const char __pyx_k_flags[] = "flags";
 static const char __pyx_k_int32[] = "int32";
+static const char __pyx_k_lamda[] = "lamda";
 static const char __pyx_k_numpy[] = "numpy";
 static const char __pyx_k_range[] = "range";
 static const char __pyx_k_shape[] = "shape";
@@ -1986,6 +1987,7 @@ static PyObject *__pyx_n_s_import;
 static PyObject *__pyx_n_s_int32;
 static PyObject *__pyx_n_s_itemsize;
 static PyObject *__pyx_kp_s_itemsize_0_for_cython_array;
+static PyObject *__pyx_n_s_lamda;
 static PyObject *__pyx_n_s_main;
 static PyObject *__pyx_n_s_memview;
 static PyObject *__pyx_n_s_mode;
@@ -2046,7 +2048,7 @@ static PyObject *__pyx_n_s_xim;
 static PyObject *__pyx_n_s_xim_mv;
 static PyObject *__pyx_n_s_xre;
 static PyObject *__pyx_n_s_xre_mv;
-static PyObject *__pyx_pf_9pycfdct3d_pycall_fdct3d(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_xre, PyObject *__pyx_v_xim, PyObject *__pyx_v_cre, PyObject *__pyx_v_cim, PyObject *__pyx_v_nxs, PyObject *__pyx_v_nys, PyObject *__pyx_v_nzs, PyObject *__pyx_v_w, PyObject *__pyx_v_N1, PyObject *__pyx_v_N2, PyObject *__pyx_v_N3, PyObject *__pyx_v_nbscales, PyObject *__pyx_v_nbdstz_coarse, PyObject *__pyx_v_ac, PyObject *__pyx_v_option); /* proto */
+static PyObject *__pyx_pf_9pycfdct3d_pycall_fdct3d(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_xre, PyObject *__pyx_v_xim, PyObject *__pyx_v_cre, PyObject *__pyx_v_cim, PyObject *__pyx_v_nxs, PyObject *__pyx_v_nys, PyObject *__pyx_v_nzs, PyObject *__pyx_v_w, PyObject *__pyx_v_N1, PyObject *__pyx_v_N2, PyObject *__pyx_v_N3, PyObject *__pyx_v_nbscales, PyObject *__pyx_v_nbdstz_coarse, PyObject *__pyx_v_ac, PyObject *__pyx_v_lamda, PyObject *__pyx_v_option); /* proto */
 static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array___cinit__(struct __pyx_array_obj *__pyx_v_self, PyObject *__pyx_v_shape, Py_ssize_t __pyx_v_itemsize, PyObject *__pyx_v_format, PyObject *__pyx_v_mode, int __pyx_v_allocate_buffer); /* proto */
 static int __pyx_array___pyx_pf_15View_dot_MemoryView_5array_2__getbuffer__(struct __pyx_array_obj *__pyx_v_self, Py_buffer *__pyx_v_info, int __pyx_v_flags); /* proto */
 static void __pyx_array___pyx_pf_15View_dot_MemoryView_5array_4__dealloc__(struct __pyx_array_obj *__pyx_v_self); /* proto */
@@ -2129,7 +2131,7 @@ static PyObject *__pyx_codeobj__27;
 /* "pycfdct3d.pyx":18
  * import numpy as np
  * 
- * def pycall_fdct3d(xre, xim, cre, cim, nxs, nys, nzs, w, N1, N2, N3, nbscales, nbdstz_coarse, ac, option):             # <<<<<<<<<<<<<<
+ * def pycall_fdct3d(xre, xim, cre, cim, nxs, nys, nzs, w, N1, N2, N3, nbscales, nbdstz_coarse, ac, lamda, option):             # <<<<<<<<<<<<<<
  * 
  *     xre = xre.astype('double')
  */
@@ -2152,17 +2154,20 @@ static PyObject *__pyx_pw_9pycfdct3d_1pycall_fdct3d(PyObject *__pyx_self, PyObje
   PyObject *__pyx_v_nbscales = 0;
   PyObject *__pyx_v_nbdstz_coarse = 0;
   PyObject *__pyx_v_ac = 0;
+  PyObject *__pyx_v_lamda = 0;
   PyObject *__pyx_v_option = 0;
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("pycall_fdct3d (wrapper)", 0);
   {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_xre,&__pyx_n_s_xim,&__pyx_n_s_cre,&__pyx_n_s_cim,&__pyx_n_s_nxs,&__pyx_n_s_nys,&__pyx_n_s_nzs,&__pyx_n_s_w,&__pyx_n_s_N1,&__pyx_n_s_N2,&__pyx_n_s_N3,&__pyx_n_s_nbscales,&__pyx_n_s_nbdstz_coarse,&__pyx_n_s_ac,&__pyx_n_s_option,0};
-    PyObject* values[15] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_xre,&__pyx_n_s_xim,&__pyx_n_s_cre,&__pyx_n_s_cim,&__pyx_n_s_nxs,&__pyx_n_s_nys,&__pyx_n_s_nzs,&__pyx_n_s_w,&__pyx_n_s_N1,&__pyx_n_s_N2,&__pyx_n_s_N3,&__pyx_n_s_nbscales,&__pyx_n_s_nbdstz_coarse,&__pyx_n_s_ac,&__pyx_n_s_lamda,&__pyx_n_s_option,0};
+    PyObject* values[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
     if (unlikely(__pyx_kwds)) {
       Py_ssize_t kw_args;
       const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
       switch (pos_args) {
+        case 16: values[15] = PyTuple_GET_ITEM(__pyx_args, 15);
+        CYTHON_FALLTHROUGH;
         case 15: values[14] = PyTuple_GET_ITEM(__pyx_args, 14);
         CYTHON_FALLTHROUGH;
         case 14: values[13] = PyTuple_GET_ITEM(__pyx_args, 13);
@@ -2205,91 +2210,97 @@ static PyObject *__pyx_pw_9pycfdct3d_1pycall_fdct3d(PyObject *__pyx_self, PyObje
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_xim)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("pycall_fdct3d", 1, 15, 15, 1); __PYX_ERR(0, 18, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("pycall_fdct3d", 1, 16, 16, 1); __PYX_ERR(0, 18, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
         if (likely((values[2] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_cre)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("pycall_fdct3d", 1, 15, 15, 2); __PYX_ERR(0, 18, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("pycall_fdct3d", 1, 16, 16, 2); __PYX_ERR(0, 18, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  3:
         if (likely((values[3] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_cim)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("pycall_fdct3d", 1, 15, 15, 3); __PYX_ERR(0, 18, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("pycall_fdct3d", 1, 16, 16, 3); __PYX_ERR(0, 18, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  4:
         if (likely((values[4] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_nxs)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("pycall_fdct3d", 1, 15, 15, 4); __PYX_ERR(0, 18, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("pycall_fdct3d", 1, 16, 16, 4); __PYX_ERR(0, 18, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  5:
         if (likely((values[5] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_nys)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("pycall_fdct3d", 1, 15, 15, 5); __PYX_ERR(0, 18, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("pycall_fdct3d", 1, 16, 16, 5); __PYX_ERR(0, 18, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  6:
         if (likely((values[6] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_nzs)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("pycall_fdct3d", 1, 15, 15, 6); __PYX_ERR(0, 18, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("pycall_fdct3d", 1, 16, 16, 6); __PYX_ERR(0, 18, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  7:
         if (likely((values[7] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_w)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("pycall_fdct3d", 1, 15, 15, 7); __PYX_ERR(0, 18, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("pycall_fdct3d", 1, 16, 16, 7); __PYX_ERR(0, 18, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  8:
         if (likely((values[8] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_N1)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("pycall_fdct3d", 1, 15, 15, 8); __PYX_ERR(0, 18, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("pycall_fdct3d", 1, 16, 16, 8); __PYX_ERR(0, 18, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  9:
         if (likely((values[9] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_N2)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("pycall_fdct3d", 1, 15, 15, 9); __PYX_ERR(0, 18, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("pycall_fdct3d", 1, 16, 16, 9); __PYX_ERR(0, 18, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case 10:
         if (likely((values[10] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_N3)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("pycall_fdct3d", 1, 15, 15, 10); __PYX_ERR(0, 18, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("pycall_fdct3d", 1, 16, 16, 10); __PYX_ERR(0, 18, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case 11:
         if (likely((values[11] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_nbscales)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("pycall_fdct3d", 1, 15, 15, 11); __PYX_ERR(0, 18, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("pycall_fdct3d", 1, 16, 16, 11); __PYX_ERR(0, 18, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case 12:
         if (likely((values[12] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_nbdstz_coarse)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("pycall_fdct3d", 1, 15, 15, 12); __PYX_ERR(0, 18, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("pycall_fdct3d", 1, 16, 16, 12); __PYX_ERR(0, 18, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case 13:
         if (likely((values[13] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_ac)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("pycall_fdct3d", 1, 15, 15, 13); __PYX_ERR(0, 18, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("pycall_fdct3d", 1, 16, 16, 13); __PYX_ERR(0, 18, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case 14:
-        if (likely((values[14] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_option)) != 0)) kw_args--;
+        if (likely((values[14] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_lamda)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("pycall_fdct3d", 1, 15, 15, 14); __PYX_ERR(0, 18, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("pycall_fdct3d", 1, 16, 16, 14); __PYX_ERR(0, 18, __pyx_L3_error)
+        }
+        CYTHON_FALLTHROUGH;
+        case 15:
+        if (likely((values[15] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_option)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("pycall_fdct3d", 1, 16, 16, 15); __PYX_ERR(0, 18, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
         if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "pycall_fdct3d") < 0)) __PYX_ERR(0, 18, __pyx_L3_error)
       }
-    } else if (PyTuple_GET_SIZE(__pyx_args) != 15) {
+    } else if (PyTuple_GET_SIZE(__pyx_args) != 16) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
@@ -2307,6 +2318,7 @@ static PyObject *__pyx_pw_9pycfdct3d_1pycall_fdct3d(PyObject *__pyx_self, PyObje
       values[12] = PyTuple_GET_ITEM(__pyx_args, 12);
       values[13] = PyTuple_GET_ITEM(__pyx_args, 13);
       values[14] = PyTuple_GET_ITEM(__pyx_args, 14);
+      values[15] = PyTuple_GET_ITEM(__pyx_args, 15);
     }
     __pyx_v_xre = values[0];
     __pyx_v_xim = values[1];
@@ -2322,24 +2334,25 @@ static PyObject *__pyx_pw_9pycfdct3d_1pycall_fdct3d(PyObject *__pyx_self, PyObje
     __pyx_v_nbscales = values[11];
     __pyx_v_nbdstz_coarse = values[12];
     __pyx_v_ac = values[13];
-    __pyx_v_option = values[14];
+    __pyx_v_lamda = values[14];
+    __pyx_v_option = values[15];
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("pycall_fdct3d", 1, 15, 15, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 18, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("pycall_fdct3d", 1, 16, 16, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 18, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("pycfdct3d.pycall_fdct3d", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_9pycfdct3d_pycall_fdct3d(__pyx_self, __pyx_v_xre, __pyx_v_xim, __pyx_v_cre, __pyx_v_cim, __pyx_v_nxs, __pyx_v_nys, __pyx_v_nzs, __pyx_v_w, __pyx_v_N1, __pyx_v_N2, __pyx_v_N3, __pyx_v_nbscales, __pyx_v_nbdstz_coarse, __pyx_v_ac, __pyx_v_option);
+  __pyx_r = __pyx_pf_9pycfdct3d_pycall_fdct3d(__pyx_self, __pyx_v_xre, __pyx_v_xim, __pyx_v_cre, __pyx_v_cim, __pyx_v_nxs, __pyx_v_nys, __pyx_v_nzs, __pyx_v_w, __pyx_v_N1, __pyx_v_N2, __pyx_v_N3, __pyx_v_nbscales, __pyx_v_nbdstz_coarse, __pyx_v_ac, __pyx_v_lamda, __pyx_v_option);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_9pycfdct3d_pycall_fdct3d(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_xre, PyObject *__pyx_v_xim, PyObject *__pyx_v_cre, PyObject *__pyx_v_cim, PyObject *__pyx_v_nxs, PyObject *__pyx_v_nys, PyObject *__pyx_v_nzs, PyObject *__pyx_v_w, PyObject *__pyx_v_N1, PyObject *__pyx_v_N2, PyObject *__pyx_v_N3, PyObject *__pyx_v_nbscales, PyObject *__pyx_v_nbdstz_coarse, PyObject *__pyx_v_ac, PyObject *__pyx_v_option) {
+static PyObject *__pyx_pf_9pycfdct3d_pycall_fdct3d(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_xre, PyObject *__pyx_v_xim, PyObject *__pyx_v_cre, PyObject *__pyx_v_cim, PyObject *__pyx_v_nxs, PyObject *__pyx_v_nys, PyObject *__pyx_v_nzs, PyObject *__pyx_v_w, PyObject *__pyx_v_N1, PyObject *__pyx_v_N2, PyObject *__pyx_v_N3, PyObject *__pyx_v_nbscales, PyObject *__pyx_v_nbdstz_coarse, PyObject *__pyx_v_ac, PyObject *__pyx_v_lamda, PyObject *__pyx_v_option) {
   __Pyx_memviewslice __pyx_v_xre_mv = { 0, 0, { 0 }, { 0 }, { 0 } };
   __Pyx_memviewslice __pyx_v_xim_mv = { 0, 0, { 0 }, { 0 }, { 0 } };
   __Pyx_memviewslice __pyx_v_cre_mv = { 0, 0, { 0 }, { 0 }, { 0 } };
@@ -2372,7 +2385,8 @@ static PyObject *__pyx_pf_9pycfdct3d_pycall_fdct3d(CYTHON_UNUSED PyObject *__pyx
   int __pyx_t_20;
   int __pyx_t_21;
   int __pyx_t_22;
-  long __pyx_t_23;
+  double __pyx_t_23;
+  long __pyx_t_24;
   __Pyx_RefNannySetupContext("pycall_fdct3d", 0);
   __Pyx_INCREF(__pyx_v_xre);
   __Pyx_INCREF(__pyx_v_xim);
@@ -2390,7 +2404,7 @@ static PyObject *__pyx_pf_9pycfdct3d_pycall_fdct3d(CYTHON_UNUSED PyObject *__pyx
   __Pyx_INCREF(__pyx_v_ac);
 
   /* "pycfdct3d.pyx":20
- * def pycall_fdct3d(xre, xim, cre, cim, nxs, nys, nzs, w, N1, N2, N3, nbscales, nbdstz_coarse, ac, option):
+ * def pycall_fdct3d(xre, xim, cre, cim, nxs, nys, nzs, w, N1, N2, N3, nbscales, nbdstz_coarse, ac, lamda, option):
  * 
  *     xre = xre.astype('double')             # <<<<<<<<<<<<<<
  *     xim = xim.astype('double')
@@ -3466,7 +3480,7 @@ static PyObject *__pyx_pf_9pycfdct3d_pycall_fdct3d(CYTHON_UNUSED PyObject *__pyx
  *                 &nys_mv[0], nys_mv.shape[0],
  *                 &nzs_mv[0], nzs_mv.shape[0],             # <<<<<<<<<<<<<<
  *                 &w_mv[0], w_mv.shape[0],
- *                 N1, N2, N3, nbscales, nbdstz_coarse, ac, ord(option))
+ *                 N1, N2, N3, nbscales, nbdstz_coarse, ac, lamda, ord(option))
  */
   __pyx_t_16 = 0;
   __pyx_t_10 = -1;
@@ -3483,7 +3497,7 @@ static PyObject *__pyx_pf_9pycfdct3d_pycall_fdct3d(CYTHON_UNUSED PyObject *__pyx
  *                 &nys_mv[0], nys_mv.shape[0],
  *                 &nzs_mv[0], nzs_mv.shape[0],
  *                 &w_mv[0], w_mv.shape[0],             # <<<<<<<<<<<<<<
- *                 N1, N2, N3, nbscales, nbdstz_coarse, ac, ord(option))
+ *                 N1, N2, N3, nbscales, nbdstz_coarse, ac, lamda, ord(option))
  * 
  */
   __pyx_t_17 = 0;
@@ -3500,7 +3514,7 @@ static PyObject *__pyx_pf_9pycfdct3d_pycall_fdct3d(CYTHON_UNUSED PyObject *__pyx
   /* "pycfdct3d.pyx":69
  *                 &nzs_mv[0], nzs_mv.shape[0],
  *                 &w_mv[0], w_mv.shape[0],
- *                 N1, N2, N3, nbscales, nbdstz_coarse, ac, ord(option))             # <<<<<<<<<<<<<<
+ *                 N1, N2, N3, nbscales, nbdstz_coarse, ac, lamda, ord(option))             # <<<<<<<<<<<<<<
  * 
  *     return xre, xim, cre, cim, nxs, nys, nzs, w
  */
@@ -3510,7 +3524,8 @@ static PyObject *__pyx_pf_9pycfdct3d_pycall_fdct3d(CYTHON_UNUSED PyObject *__pyx
   __pyx_t_20 = __Pyx_PyInt_As_int(__pyx_v_nbscales); if (unlikely((__pyx_t_20 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 69, __pyx_L1_error)
   __pyx_t_21 = __Pyx_PyInt_As_int(__pyx_v_nbdstz_coarse); if (unlikely((__pyx_t_21 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 69, __pyx_L1_error)
   __pyx_t_22 = __Pyx_PyInt_As_int(__pyx_v_ac); if (unlikely((__pyx_t_22 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 69, __pyx_L1_error)
-  __pyx_t_23 = __Pyx_PyObject_Ord(__pyx_v_option); if (unlikely(__pyx_t_23 == ((long)(long)(Py_UCS4)-1))) __PYX_ERR(0, 69, __pyx_L1_error)
+  __pyx_t_23 = __pyx_PyFloat_AsDouble(__pyx_v_lamda); if (unlikely((__pyx_t_23 == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 69, __pyx_L1_error)
+  __pyx_t_24 = __Pyx_PyObject_Ord(__pyx_v_option); if (unlikely(__pyx_t_24 == ((long)(long)(Py_UCS4)-1))) __PYX_ERR(0, 69, __pyx_L1_error)
 
   /* "pycfdct3d.pyx":61
  *     cdef int[::1] w_mv = w
@@ -3519,10 +3534,10 @@ static PyObject *__pyx_pf_9pycfdct3d_pycall_fdct3d(CYTHON_UNUSED PyObject *__pyx
  *                 &xim_mv[0], xim_mv.shape[0],
  *                 &cre_mv[0], cre_mv.shape[0],
  */
-  call_fdct3d((&(*((double *) ( /* dim=0 */ ((char *) (((double *) __pyx_v_xre_mv.data) + __pyx_t_9)) )))), (__pyx_v_xre_mv.shape[0]), (&(*((double *) ( /* dim=0 */ ((char *) (((double *) __pyx_v_xim_mv.data) + __pyx_t_11)) )))), (__pyx_v_xim_mv.shape[0]), (&(*((double *) ( /* dim=0 */ ((char *) (((double *) __pyx_v_cre_mv.data) + __pyx_t_12)) )))), (__pyx_v_cre_mv.shape[0]), (&(*((double *) ( /* dim=0 */ ((char *) (((double *) __pyx_v_cim_mv.data) + __pyx_t_13)) )))), (__pyx_v_cim_mv.shape[0]), (&(*((int *) ( /* dim=0 */ ((char *) (((int *) __pyx_v_nxs_mv.data) + __pyx_t_14)) )))), (__pyx_v_nxs_mv.shape[0]), (&(*((int *) ( /* dim=0 */ ((char *) (((int *) __pyx_v_nys_mv.data) + __pyx_t_15)) )))), (__pyx_v_nys_mv.shape[0]), (&(*((int *) ( /* dim=0 */ ((char *) (((int *) __pyx_v_nzs_mv.data) + __pyx_t_16)) )))), (__pyx_v_nzs_mv.shape[0]), (&(*((int *) ( /* dim=0 */ ((char *) (((int *) __pyx_v_w_mv.data) + __pyx_t_17)) )))), (__pyx_v_w_mv.shape[0]), __pyx_t_10, __pyx_t_18, __pyx_t_19, __pyx_t_20, __pyx_t_21, __pyx_t_22, __pyx_t_23);
+  call_fdct3d((&(*((double *) ( /* dim=0 */ ((char *) (((double *) __pyx_v_xre_mv.data) + __pyx_t_9)) )))), (__pyx_v_xre_mv.shape[0]), (&(*((double *) ( /* dim=0 */ ((char *) (((double *) __pyx_v_xim_mv.data) + __pyx_t_11)) )))), (__pyx_v_xim_mv.shape[0]), (&(*((double *) ( /* dim=0 */ ((char *) (((double *) __pyx_v_cre_mv.data) + __pyx_t_12)) )))), (__pyx_v_cre_mv.shape[0]), (&(*((double *) ( /* dim=0 */ ((char *) (((double *) __pyx_v_cim_mv.data) + __pyx_t_13)) )))), (__pyx_v_cim_mv.shape[0]), (&(*((int *) ( /* dim=0 */ ((char *) (((int *) __pyx_v_nxs_mv.data) + __pyx_t_14)) )))), (__pyx_v_nxs_mv.shape[0]), (&(*((int *) ( /* dim=0 */ ((char *) (((int *) __pyx_v_nys_mv.data) + __pyx_t_15)) )))), (__pyx_v_nys_mv.shape[0]), (&(*((int *) ( /* dim=0 */ ((char *) (((int *) __pyx_v_nzs_mv.data) + __pyx_t_16)) )))), (__pyx_v_nzs_mv.shape[0]), (&(*((int *) ( /* dim=0 */ ((char *) (((int *) __pyx_v_w_mv.data) + __pyx_t_17)) )))), (__pyx_v_w_mv.shape[0]), __pyx_t_10, __pyx_t_18, __pyx_t_19, __pyx_t_20, __pyx_t_21, __pyx_t_22, __pyx_t_23, __pyx_t_24);
 
   /* "pycfdct3d.pyx":71
- *                 N1, N2, N3, nbscales, nbdstz_coarse, ac, ord(option))
+ *                 N1, N2, N3, nbscales, nbdstz_coarse, ac, lamda, ord(option))
  * 
  *     return xre, xim, cre, cim, nxs, nys, nzs, w             # <<<<<<<<<<<<<<
  */
@@ -3560,7 +3575,7 @@ static PyObject *__pyx_pf_9pycfdct3d_pycall_fdct3d(CYTHON_UNUSED PyObject *__pyx
   /* "pycfdct3d.pyx":18
  * import numpy as np
  * 
- * def pycall_fdct3d(xre, xim, cre, cim, nxs, nys, nzs, w, N1, N2, N3, nbscales, nbdstz_coarse, ac, option):             # <<<<<<<<<<<<<<
+ * def pycall_fdct3d(xre, xim, cre, cim, nxs, nys, nzs, w, N1, N2, N3, nbscales, nbdstz_coarse, ac, lamda, option):             # <<<<<<<<<<<<<<
  * 
  *     xre = xre.astype('double')
  */
@@ -17204,6 +17219,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_int32, __pyx_k_int32, sizeof(__pyx_k_int32), 0, 0, 1, 1},
   {&__pyx_n_s_itemsize, __pyx_k_itemsize, sizeof(__pyx_k_itemsize), 0, 0, 1, 1},
   {&__pyx_kp_s_itemsize_0_for_cython_array, __pyx_k_itemsize_0_for_cython_array, sizeof(__pyx_k_itemsize_0_for_cython_array), 0, 0, 1, 0},
+  {&__pyx_n_s_lamda, __pyx_k_lamda, sizeof(__pyx_k_lamda), 0, 0, 1, 1},
   {&__pyx_n_s_main, __pyx_k_main, sizeof(__pyx_k_main), 0, 0, 1, 1},
   {&__pyx_n_s_memview, __pyx_k_memview, sizeof(__pyx_k_memview), 0, 0, 1, 1},
   {&__pyx_n_s_mode, __pyx_k_mode, sizeof(__pyx_k_mode), 0, 0, 1, 1},
@@ -17479,14 +17495,14 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   /* "pycfdct3d.pyx":18
  * import numpy as np
  * 
- * def pycall_fdct3d(xre, xim, cre, cim, nxs, nys, nzs, w, N1, N2, N3, nbscales, nbdstz_coarse, ac, option):             # <<<<<<<<<<<<<<
+ * def pycall_fdct3d(xre, xim, cre, cim, nxs, nys, nzs, w, N1, N2, N3, nbscales, nbdstz_coarse, ac, lamda, option):             # <<<<<<<<<<<<<<
  * 
  *     xre = xre.astype('double')
  */
-  __pyx_tuple__19 = PyTuple_Pack(23, __pyx_n_s_xre, __pyx_n_s_xim, __pyx_n_s_cre, __pyx_n_s_cim, __pyx_n_s_nxs, __pyx_n_s_nys, __pyx_n_s_nzs, __pyx_n_s_w, __pyx_n_s_N1, __pyx_n_s_N2, __pyx_n_s_N3, __pyx_n_s_nbscales, __pyx_n_s_nbdstz_coarse, __pyx_n_s_ac, __pyx_n_s_option, __pyx_n_s_xre_mv, __pyx_n_s_xim_mv, __pyx_n_s_cre_mv, __pyx_n_s_cim_mv, __pyx_n_s_nxs_mv, __pyx_n_s_nys_mv, __pyx_n_s_nzs_mv, __pyx_n_s_w_mv); if (unlikely(!__pyx_tuple__19)) __PYX_ERR(0, 18, __pyx_L1_error)
+  __pyx_tuple__19 = PyTuple_Pack(24, __pyx_n_s_xre, __pyx_n_s_xim, __pyx_n_s_cre, __pyx_n_s_cim, __pyx_n_s_nxs, __pyx_n_s_nys, __pyx_n_s_nzs, __pyx_n_s_w, __pyx_n_s_N1, __pyx_n_s_N2, __pyx_n_s_N3, __pyx_n_s_nbscales, __pyx_n_s_nbdstz_coarse, __pyx_n_s_ac, __pyx_n_s_lamda, __pyx_n_s_option, __pyx_n_s_xre_mv, __pyx_n_s_xim_mv, __pyx_n_s_cre_mv, __pyx_n_s_cim_mv, __pyx_n_s_nxs_mv, __pyx_n_s_nys_mv, __pyx_n_s_nzs_mv, __pyx_n_s_w_mv); if (unlikely(!__pyx_tuple__19)) __PYX_ERR(0, 18, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__19);
   __Pyx_GIVEREF(__pyx_tuple__19);
-  __pyx_codeobj__20 = (PyObject*)__Pyx_PyCode_New(15, 0, 23, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__19, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_pycfdct3d_pyx, __pyx_n_s_pycall_fdct3d, 18, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__20)) __PYX_ERR(0, 18, __pyx_L1_error)
+  __pyx_codeobj__20 = (PyObject*)__Pyx_PyCode_New(16, 0, 24, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__19, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_pycfdct3d_pyx, __pyx_n_s_pycall_fdct3d, 18, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__20)) __PYX_ERR(0, 18, __pyx_L1_error)
 
   /* "View.MemoryView":286
  *         return self.name
@@ -17892,11 +17908,11 @@ if (!__Pyx_RefNanny) {
   #endif
 
   /* "pycfdct3d.pyx":16
- *                     int ac, char option)
+ *                     int ac, double lamda, char option)
  * 
  * import numpy as np             # <<<<<<<<<<<<<<
  * 
- * def pycall_fdct3d(xre, xim, cre, cim, nxs, nys, nzs, w, N1, N2, N3, nbscales, nbdstz_coarse, ac, option):
+ * def pycall_fdct3d(xre, xim, cre, cim, nxs, nys, nzs, w, N1, N2, N3, nbscales, nbdstz_coarse, ac, lamda, option):
  */
   __pyx_t_1 = __Pyx_Import(__pyx_n_s_numpy, 0, -1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 16, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
@@ -17906,7 +17922,7 @@ if (!__Pyx_RefNanny) {
   /* "pycfdct3d.pyx":18
  * import numpy as np
  * 
- * def pycall_fdct3d(xre, xim, cre, cim, nxs, nys, nzs, w, N1, N2, N3, nbscales, nbdstz_coarse, ac, option):             # <<<<<<<<<<<<<<
+ * def pycall_fdct3d(xre, xim, cre, cim, nxs, nys, nzs, w, N1, N2, N3, nbscales, nbdstz_coarse, ac, lamda, option):             # <<<<<<<<<<<<<<
  * 
  *     xre = xre.astype('double')
  */
