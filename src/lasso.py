@@ -40,6 +40,8 @@ class LassoSolver:
             verbose_rate=10,
             stop_criterion=None,
             sparsifying=None,
+            print_recon=False,
+            ground_truth=None,
             ):
         """ Solves lasso using fista 
         """
@@ -52,6 +54,9 @@ class LassoSolver:
 
         if sparsifying=="curvelets":
             self.curve_params = utils.curvelet_params(x_init.shape)
+
+        if print_recon:
+            xgt = ground_truth
 
         y = x_init.copy()
         x = x_init.copy()
@@ -80,6 +85,9 @@ class LassoSolver:
             if verbose and i%verbose_rate==0:
                 loss = la.norm(fwd_op(x)-z_meas)**2 /np.prod(z_meas.shape)
                 print("Iter :", i, ", MSE :", loss)
+                if print_recon:
+                    recon_error = la.norm(xgt-x)**2/np.prod(x.shape)
+                    print("Recon. MSE :", recon_error)
 
             if stop_criterion!=None:
 
@@ -102,7 +110,9 @@ class LassoSolver:
             verbose=True,
             verbose_rate=10,
             stop_criterion=None,
-            sparsifying=None):
+            sparsifying=None,
+            print_recon=False,
+            ground_truth=None):
 
         """ Solves lasso using Iterative Shrinkage and Thresholding.
         `x_init`         : Initial value/estimate. Default is all zeros.
@@ -124,6 +134,9 @@ class LassoSolver:
         if sparsifying=="curvelets":
             self.curve_params = utils.curvelet_params(x_init.shape)
 
+        if print_recon:
+            xgt = ground_truth
+
         x = x_init.copy()
         fwd_op = self.fwd_op
 
@@ -139,9 +152,12 @@ class LassoSolver:
                 xnext = utils.soft_wavelets(x, lam)
             elif sparsifying=="curvelets":
                 xnext = utils.soft_curvelets(x, lam, self.curve_params)
+            elif i==0:
+                print("No sparsification used")
 
             # real projection
             x.imag = 0.
+            # x.real[x.real<0.] = 0.
 
             # Regularization scheduling
             lam = reg_scheduling * lam
@@ -149,9 +165,12 @@ class LassoSolver:
             # Step scheduling
             step = step_scheduling * step
 
-            if verbose and i%verbose_rate==0:
+            if verbose and (i%verbose_rate==0 or i==n_iter):
                 loss = la.norm(fwd_op(x)-z_meas)**2 /np.prod(z_meas.shape)
                 print("Iter :", i, ", MSE :", loss)
+                if print_recon:
+                    recon_error = la.norm(xgt-x)**2/np.prod(x.shape)
+                    print("Recon. MSE :", recon_error)
 
             if stop_criterion!=None:
 
@@ -163,6 +182,8 @@ class LassoSolver:
 
         return x
         
-                
 
+def holographic_recon(fwd_op, y_meas):
+
+    return fwd_op.adjoint(y_meas)/fwd_op.shapeOI[1][2]
         

@@ -15,8 +15,8 @@ try:
 	import pyfdct3d
 except ImportError:
 	pass
-NBSCALES = 3 # number of scales of the curvelet transform
-NBDSTZ_COARSE = 2
+NBSCALES = 4 # number of scales of the curvelet transform
+NBDSTZ_COARSE = 3
 AC = 0 # wavelet or curvelet initialization
 
 from numpy import pi, cos, sin, exp
@@ -34,8 +34,12 @@ def add_noise(x, SNR, mode='gaussian'):
 
 	if mode=='gaussian':
 		x_noisy = x + sigma * np.random.randn(*(x.shape))
-	if mode=='salt_pepper':
+	elif mode=='salt_pepper':
 		x_noisy = x + sigma * abs(np.random.randn(*(x.shape)))
+	elif mode=='complex':
+		x_noisy = x + sigma/np.sqrt(2) * (np.random.randn(*(x.shape)) + 1.j*np.random.randn(*(x.shape)))
+	else:
+		raise ValueError("Enter a suitable mode")
 
 	return x_noisy
 
@@ -103,3 +107,12 @@ def soft_curvelets(x, lamda, params):
 
 	return pyfdct3d.curvesoft3(x, lamda, params)
 
+def mse(x1, x2):
+	return la.norm(x1-x2)**2/np.prod(x1.shape)
+
+def psnr(x1, x2):
+	recon_mse = mse(x1,x2)
+	return 10*np.log10(abs(x1).max()**2/recon_mse)
+
+def rel_err(x1, x2):
+	return la.norm(x1-x2)/la.norm(x1)

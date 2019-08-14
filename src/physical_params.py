@@ -10,7 +10,7 @@ REF_IDX = 1.35
 
 # length scales
 L = 166.4 # um
-LZ = 25. # um
+LZ = 10. # um
 
 def create_grid(N, NZ):
 

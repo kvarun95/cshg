@@ -84,13 +84,14 @@ def test_curvelet_sparsity():
 if True:
 
     N = 256
-    NZ = 5
+    NZ = 10
     data_dir = "../data/"
     filename = "phantom2d.tif"
     alpha = 70.
     sigma = 5.
     num_masks = 10
     type_masks = "ex"
+    SNR = 20
 
     im = Image.open(data_dir+filename)
     xgt = np.zeros((N,N,NZ), dtype=complex)
@@ -122,27 +123,35 @@ if True:
 
     # # generate artificial data
     y_true = fwd_op(xgt)
-    y_meas = utils.add_noise(y_true, 100)
-    x_init = 0.01*fwd_op.adjoint(y_meas)
+    y_meas = utils.add_noise(y_true, SNR, mode='complex')
+    y_hol = fwd_op.uscope(xgt)
+    y_hol_meas = utils.add_noise(y_hol, SNR, mode='complex')
+    x_init = fwd_op.adjoint(y_meas)/mask.num/NZ
 
     solver = LassoSolver(fwd_op, use_fista=False)
-    # solver.solve_fista(y_meas, n_iter=100, sparsifying="wavelets")
+    # xest,_,_ = solver.solve_fista(y_meas, n_iter=100,
+    #                    sparsifying="curvelets",
+    #                    print_recon=True,
+    #                    ground_truth=xgt)
     xest = solver.solve_ista(y_meas,
                             x_init=x_init,
                             step=1.e-2,
-                            lam=1.2e-2,
-                            n_iter=100,
-                            step_scheduling=0.999,
-                            reg_scheduling=0.95,
-                            sparsifying="curvelets")
+                            lam=1.e-3,
+                            n_iter=500,
+                            step_scheduling=0.9999,
+                            reg_scheduling=0.995,
+                            sparsifying="curvelets",
+                            print_recon=True,
+                            ground_truth=xgt)
 
-    recon_mse = la.norm(xest-xgt)**2/np.prod(xgt.shape)
-    recon_psnr = 10*np.log10(abs(xgt).max()**2/recon_mse)
-    rel_error = sqrt(recon_mse)/la.norm(xgt)
-    print("Reconstruction Mean Squared Error :", recon_mse)
-    print("Reconstruction PSNR :", recon_psnr)
-    print("Reconstruction Relative Error :", rel_error*100, "%")
+    print("Reconstruction Mean Squared Error :", utils.mse(xgt, xest))
+    print("Reconstruction PSNR :", utils.psnr(xgt, xest))
+    print("Reconstruction Relative Error :", utils.rel_err(xgt, xest), "%")
 
+    xhol = holographic_recon(fwd_op.uscope, y_hol_meas)
+    print("Holo. Recon. Mean Squared Error :", utils.mse(xgt, xhol))
+    print("Holo. Recon. PSNR :", utils.psnr(xgt, xhol))
+    print("Holo. Recon. Relative Error :", utils.rel_err(xgt, xhol), "%")
 
 def imageplot(i):
     plt.figure(1)
