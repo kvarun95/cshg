@@ -19,11 +19,13 @@ class FresnelProp(object):
                 input_shape,
                 output_shape,
                 dtype=complex,
+                defocus=0.,
                 include_shg=False):
 
         self.shapeOI = [output_shape, input_shape]
         self.shape = ( np.prod(output_shape), np.prod(input_shape) )
         self.dtype = dtype
+        self.defocus = defocus
         self.include_shg = include_shg
 
         assert input_shape[0]==input_shape[1], "Input X and Y shapes must be equal."        
@@ -47,18 +49,20 @@ class FresnelProp(object):
         self.NAmask = (magf2 <= (NA/WAVELENGTH)**2).astype(float)
         self.kernel = np.zeros(input_shape, dtype=complex)
 
+        d0 = defocus
+
         if include_shg:
             for i in range(len(Z)):
                 # starting phase due to propagation of fundamental, and phase matching
                 phase0 = -2.*pi* (REF_IDX/WAVELENGTH) *Z[i]
-                phase = -2.*pi* (LZ-Z[i]) *sqrt((REF_IDX/WAVELENGTH)**2 - magf2)
+                phase = -2.*pi* (LZ-Z[i]-d0) *sqrt((REF_IDX/WAVELENGTH)**2 - magf2)
                 self.kernel[...,i] = utils.cis(phase) * self.NAmask * utils.cis(phase0)
     
             self.adj_kernel = self.kernel.conj()
 
         else:
             for i in range(len(Z)):
-                phase = -2.*pi* (LZ-Z[i]) *sqrt((REF_IDX/WAVELENGTH)**2 - magf2)
+                phase = -2.*pi* (LZ-Z[i]-d0) *sqrt((REF_IDX/WAVELENGTH)**2 - magf2)
                 self.kernel[...,i] = utils.cis(phase) * self.NAmask
     
             self.adj_kernel = self.kernel.conj()
@@ -155,16 +159,17 @@ class FourierProp(object):
 
 class ForwardModel(object):
 
-    def __init__(self, input_shape, mask, include_shg=True):
+    def __init__(self, input_shape, mask, defocus=0., include_shg=True):
 
         assert mask.shape==input_shape[:2], "Improper shapes for mask and input"
 
         self.dtype=complex,
         self.shape=( np.prod(mask.shape)*mask.num, np.prod(input_shape) )
         self.shapeOI = ( (mask.num, *mask.shape), input_shape )
+        self.defocus = defocus
         self.include_shg = include_shg
 
-        self.uscope = FresnelProp(input_shape, mask.shape, include_shg=self.include_shg)
+        self.uscope = FresnelProp(input_shape, mask.shape, defocus=self.defocus, include_shg=self.include_shg)
         self.fourf = FourierProp(mask)
 
 

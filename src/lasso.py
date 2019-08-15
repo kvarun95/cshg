@@ -95,8 +95,10 @@ class LassoSolver:
                 err = la.norm(fwd_op(x)-z_meas)
                 
                 if abs(err-err_prev)/err < stop_criterion:
+                    self.final_mse = la.norm(fwd_op(x)-z_meas)**2 /np.prod(z_meas.shape)
                     return x, y, t
 
+        self.final_mse = la.norm(fwd_op(x)-z_meas)**2 /np.prod(z_meas.shape)
         return x, y, t
 
 
@@ -105,6 +107,7 @@ class LassoSolver:
             n_iter=100,
             step=1.e-3,
             lam=5.e-4,
+            imag_reg=0.5,
             step_scheduling=1.,
             reg_scheduling=1.,
             verbose=True,
@@ -133,6 +136,8 @@ class LassoSolver:
 
         if sparsifying=="curvelets":
             self.curve_params = utils.curvelet_params(x_init.shape)
+        if sparsifying=="curvelets2":
+            self.curve_params = utils.curvelet_params((*x_init.shape[:2], 1))
 
         if print_recon:
             xgt = ground_truth
@@ -152,11 +157,13 @@ class LassoSolver:
                 xnext = utils.soft_wavelets(x, lam)
             elif sparsifying=="curvelets":
                 xnext = utils.soft_curvelets(x, lam, self.curve_params)
+            elif sparsifying=="curvelets2":
+                xnext = utils.soft_curvelets2(x, lam, self.curve_params)
             elif i==0:
                 print("No sparsification used")
 
             # real projection
-            x.imag = 0.
+            x.imag = x.imag/(1.+sqrt(2*imag_reg))
             # x.real[x.real<0.] = 0.
 
             # Regularization scheduling
@@ -178,8 +185,10 @@ class LassoSolver:
                 err = la.norm(fwd_op(x)-z_meas)
                 
                 if abs(err-err_prev)/err < stop_criterion:
+                    self.final_mse = la.norm(fwd_op(x)-z_meas)**2 /np.prod(z_meas.shape)
                     return x
 
+        self.final_mse = la.norm(fwd_op(x)-z_meas)**2 /np.prod(z_meas.shape)
         return x
         
 

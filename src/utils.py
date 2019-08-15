@@ -107,12 +107,21 @@ def soft_curvelets(x, lamda, params):
 
 	return pyfdct3d.curvesoft3(x, lamda, params)
 
+
+def soft_curvelets2(x, lamda, params):
+
+	xlist = [pyfdct3d.curvesoft3(x[:,:,i:i+1], lamda, params) for i in range(x.shape[2])]
+	return np.concatenate(xlist, axis=2)
+
+
 def mse(x1, x2):
 	return la.norm(x1-x2)**2/np.prod(x1.shape)
+
 
 def psnr(x1, x2):
 	recon_mse = mse(x1,x2)
 	return 10*np.log10(abs(x1).max()**2/recon_mse)
+
 
 def rel_err(x1, x2):
 	return la.norm(x1-x2)/la.norm(x1)
