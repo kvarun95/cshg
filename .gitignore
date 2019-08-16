@@ -1,5 +1,8 @@
 # project specific
 rawdata/
+src/*.pdf
+src/*.html
+src/*.png
 
 # For MACs
 .DS_Store/

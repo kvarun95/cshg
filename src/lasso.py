@@ -107,9 +107,10 @@ class LassoSolver:
             n_iter=100,
             step=1.e-3,
             lam=5.e-4,
-            imag_reg=0.5,
+            imag_reg=0.,
             step_scheduling=1.,
             reg_scheduling=1.,
+            collected_field=np.array([None]),
             verbose=True,
             verbose_rate=10,
             stop_criterion=None,
@@ -131,6 +132,8 @@ class LassoSolver:
                            If `"curvelets"`, use curvelet transform. `pycfdct3d` package in `../Curvelab/fdct3d/src/` needs to be installed.
         """
 
+        fwd_op = self.fwd_op
+
         if x_init.all()==None:
             x_init = np.zeros(self.fwd_op.shapeOI[1], dtype=complex)
 
@@ -142,13 +145,21 @@ class LassoSolver:
         if print_recon:
             xgt = ground_truth
 
+        if collected_field.all()!=None:
+            assert collected_field.shape == fwd_op.uscope.shapeOI[0], "Dimension mismatch between collected field and output of microscope"
+            y_rsp = collected_field
+
         x = x_init.copy()
-        fwd_op = self.fwd_op
 
         for i in range(n_iter):
 
             # gradient step 
+            xprev = x.copy()
             x = x - step * fwd_op.adjoint(fwd_op(x) - z_meas)
+
+            # gradient step to match with the measurement without coded apertures
+            if collected_field.all()!=None:
+                x = x - step * fwd_op.uscope.adjoint(fwd_op.uscope(x) - y_rsp)
 
             # proximal step
             if sparsifying==None:
@@ -164,6 +175,7 @@ class LassoSolver:
 
             # real projection
             x.imag = x.imag/(1.+sqrt(2*imag_reg))
+            # x.imag = 0.
             # x.real[x.real<0.] = 0.
 
             # Regularization scheduling
@@ -171,6 +183,7 @@ class LassoSolver:
 
             # Step scheduling
             step = step_scheduling * step
+
 
             if verbose and (i%verbose_rate==0 or i==n_iter):
                 loss = la.norm(fwd_op(x)-z_meas)**2 /np.prod(z_meas.shape)

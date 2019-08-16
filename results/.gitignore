@@ -1,1 +1,4 @@
 *.npy
+
+# for mac
+.DS_Store/

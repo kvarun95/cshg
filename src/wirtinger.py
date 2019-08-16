@@ -256,7 +256,7 @@ def wirtinger_flow(I, fwd_op, lamda, z_init='spectral', mu0=0.4, n_iter=100,
 				loss = la.norm(I - abs(fwd_op.apply(z))**2)**2/np.prod(I.shape)
 				print('MSE :', loss)
 
-			if include_gersh==True and i>0.8*n_iter and i%5==0:
+			if include_gersh==True and i>0.8*n_iter and (i+1)%5==0:
 				zr = propagator2d(z)
 				zr = la.norm(zr)/la.norm(gersh_proj) * gersh_proj / abs(zr) * zr
 				z = 1./np.prod(zr.shape) * backpropagator2d(zr)

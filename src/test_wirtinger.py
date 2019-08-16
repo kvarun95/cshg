@@ -275,10 +275,10 @@ def artificial_data_coded_apertures_with_real_input():
     # plt.show()
 
 
-def real_data_coded_apertures(niter):
+def wf_real_data_coded_apertures(niter, verbose=False):
 # if True:
 
-    niter = 500
+    # niter = 500
 
     print('real_data_coded_apertures')
     N = 256
@@ -292,6 +292,7 @@ def real_data_coded_apertures(niter):
     for file in os.listdir(data_dir+"maskth/"):
         if file.endswith(".tif"):
             mask_filenames += [data_dir+"maskth/"+file]
+    mask_filenames.sort(key=lambda f: int(''.join(filter(str.isdigit, f))))
 
 
     mask = masks(num_masks, (N,N))
@@ -341,22 +342,22 @@ def real_data_coded_apertures(niter):
             tau0 = 10000,
             tikhonov=True,
             reg=0.001,
-            include_gersh=True,
+            include_gersh=False,
             gersh_proj=master,
             verbose=True)
 
     # plt.imshow(np.abs(x_init));plt.colorbar();plt.show()
     y_est2d = propagator2d(x_est, mode='ortho')
     y_est_meas = propagator(mask.apply(x_est), mode='ortho')
-    np.save("../results/ReconCpxField_fplane.npy", x_est)
-    np.save("../results/ReconCpxField_rplane.npy", y_est2d)
-    np.save("../results/ReconCpxField_meas.npy", y_est_meas)
-    np.save("../results/InitialEst_wirtflow.npy", x_init)
+    np.save("../results/ReconCpxField_fplane1.npy", x_est)
+    np.save("../results/ReconCpxField_rplane1.npy", y_est2d)
+    np.save("../results/ReconCpxField_meas1.npy", y_est_meas)
+    np.save("../results/InitialEst_wirtflow1.npy", x_init)
     np.save("../results/IntensityMeasurements.npy", I_meas)
     with open("../results/loss.txt", 'w') as file:
         file.write("Final Mean Square Error :"+str(final_loss)+"\n")
 
-    return x_init, x_est, fwd_op, I_meas, final_loss
+    return final_loss, y_est2d, y_est_meas, x_init, x_est, fwd_op, I_meas
 
 
 def overnight_run_with_high_hopes(niters):
@@ -368,7 +369,7 @@ def overnight_run_with_high_hopes(niters):
     # niters = [10, 300, 500, 1000, 1500, 2000, 2500, 3000]
 
     for niter in niters:
-        x_init, x_est, fwd_op, I_meas, loss = real_data_coded_apertures(niter)
+        loss, _,_, x_init, x_est, fwd_op, I_meas = wf_real_data_coded_apertures(niter)
         x_inits = x_inits + [x_init]
         x_ests = x_ests + [x_est]
         fwd_ops = fwd_ops + [fwd_op]
