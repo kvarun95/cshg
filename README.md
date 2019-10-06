@@ -4,7 +4,21 @@
 
 ## Installation and use:
 
-- Install fftw2.
+- Install fftw2 as follows:
+    Download `fftw-2.1.5.tar.gz` from www.fftw.org
+    Unpack fftw2:
+    ```
+    tar -xzvf fftw-2.1.5.tar.gz 
+    ```
+    Install as follows:
+    ```
+    cd fftw-2.1.5
+    ./configure
+    make 
+    sudo make install
+    ```
+    The above process should work correctly on Mac OS. For linux, you might need to replace `make` with `make CFLAGS="-fPIC"` in order to install fftw2 correctly.
+
 - Then install the included curvelab package as follows:
 
     Enter `/Curvelab/`.
