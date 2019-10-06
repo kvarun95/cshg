@@ -8,17 +8,17 @@
         ],
         "extra_compile_args": [
             "-fPIC",
-            "-L/Users/vkelkar/fftw-2.1.5/fftw/.libs",
+            "-L/home/vak2/opt/fftw-2.1.5/fftw/.libs",
             "-lfftw"
         ],
         "extra_objects": [
             "libfdct3d.a",
-            "/Users/vkelkar/fftw-2.1.5/fftw/.libs/libfftw.a"
+            "/home/vak2/opt/fftw-2.1.5/fftw/.libs/libfftw.a"
         ],
         "include_dirs": [
-            "/usr/local/lib/python3.7/site-packages/numpy/core/include",
+            "/usr/lib/python3/dist-packages/numpy/core/include",
             ".",
-            "/Users/vkelkar/fftw-2.1.5/fftw/.libs"
+            "/home/vak2/opt/fftw-2.1.5/fftw/.libs"
         ],
         "language": "c++",
         "libraries": [
@@ -26,7 +26,7 @@
             "fdct3d"
         ],
         "library_dirs": [
-            "/Users/vkelkar/fftw-2.1.5/fftw/.libs",
+            "/home/vak2/opt/fftw-2.1.5/fftw/.libs",
             "."
         ],
         "name": "pycfdct3d",

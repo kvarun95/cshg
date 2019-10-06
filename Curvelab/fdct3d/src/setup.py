@@ -4,6 +4,9 @@ from distutils.core import setup, Extension
 import numpy
 from Cython.Build import cythonize
 
+SWIG = False
+FFTW = '/home/vak2/opt/fftw-2.1.5'
+
 def remove_pthread(x):
     if type(x) is str:
         # x.replace(" -pthread ") would be probably enough...
@@ -29,9 +32,6 @@ def my_get_config_vars(*args):
 
 # 2.step: replace    
 dsc.get_config_vars = my_get_config_vars
-
-SWIG = False
-FFTW = '/Users/vkelkar/fftw-2.1.5'
 
 if SWIG:
       # g++ -o cfdct3d cfdct3d.cpp libfdct3d.a -fPIC -L/home/varun/fftw-2.1.5/fftw/.libs -lfftw

@@ -1,7 +1,7 @@
 // Author : Varun Kelkar
 
 // Compile as : 
-// g++ -o cfdct3d cfdct3d.cpp libfdct3d.a -fPIC -L/home/varun/fftw-2.1.5/fftw/.libs -lfftw
+// g++ -I/home/vak2/opt/fftw2/include -o cfdct3d cfdct3d.cpp libfdct3d.a -fPIC -L/home/vak2/opt/fftw-2.1.5/fftw/.libs -lfftw
 
 #include "fdct3d.hpp"
 #include "fdct3dinline.hpp"

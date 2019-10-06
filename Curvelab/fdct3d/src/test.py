@@ -1,7 +1,7 @@
 import numpy as np
 # import cfdct3d
 import pycfdct3d
-
+import sys
 
 
 def test_w():
@@ -208,11 +208,11 @@ def test_inverse():
                         ac, lamda, option)
 
 
-def test_softthreshold():
+def test_softthreshold(lamda=0.01):
 
     option = 'S'
     ac = 0
-    lamda = 0.01
+    # lamda = 0.01
     nbscales = 2
     nbdstz_coarse = 3
     n_W = nbscales
@@ -275,3 +275,32 @@ def test_softthreshold():
     print(xim_io-xim_old)
     print(abs(xre_io-xre_old).max())
     print(abs(xim_io-xim_old).max())
+
+
+
+if __name__=="__main__":
+
+    if sys.argv[1] == "all":
+        test_w()
+        test_param()
+        test_forward()
+        test_inverse()
+        test_softthreshold()
+        
+    if sys.argv[1] == "param":
+        test_w()
+        test_param()
+
+    if sys.argv[1] == "forward":
+        test_forward()
+        
+    if sys.argv[1] == "inverse":
+        test_inverse()
+
+    if sys.argv[1] == "softthreshold":
+
+        print("Zero soft thresholding:\n")
+        test_softthreshold(0)
+        print("Nonzero soft thresholding:\n")
+        test_softthreshold()
+        

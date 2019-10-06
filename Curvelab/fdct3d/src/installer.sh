@@ -13,4 +13,5 @@ if [ "$1" == "cython" ]; then
 	rm pycfdct3d.c
 	rm pycfdct3d.cpp
 	CC=g++ python3 setup.py build_ext --inplace
+#	CC=g++ python3 setup.py install
 fi
